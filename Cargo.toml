@@ -5,4 +5,5 @@ authors = ["Trip Volpe <trip.volpe@gmail.com>"]
 
 [dependencies]
 sdl2 = "*"
+sdl2_image = "*"
 snes_spc = { git = "https://github.com/tripped/rust-snes_spc" }

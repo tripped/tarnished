@@ -6,6 +6,9 @@ use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use snes_spc::SnesSpc;
 
+mod scene;
+use scene::Scene;
+
 struct SpcPlayer {
     emulator: SnesSpc
 }
