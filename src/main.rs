@@ -6,8 +6,8 @@ use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use snes_spc::SnesSpc;
 
-mod scene;
-use scene::Scene;
+mod renderer;
+use renderer::{DrawOp, DrawSprite};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -51,6 +51,9 @@ fn main() {
 
     audio.resume();
 
+    // Draw a sprite
+    let starman = DrawSprite::new("assets/starmanjr_lg", (300, 100));
+
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
@@ -61,6 +64,7 @@ fn main() {
                 _ => { }
             }
         }
+        starman.draw(&mut renderer);
         renderer.present();
     }
 }
