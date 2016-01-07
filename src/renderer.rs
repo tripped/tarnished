@@ -1,5 +1,5 @@
 // Some draw operations for a renderer
-// TODO rename
+// TODO rename this file
 
 extern crate sdl2;
 extern crate sdl2_image;
@@ -9,34 +9,33 @@ use self::sdl2::render::Renderer;
 use self::sdl2::rect::Rect;
 use self::sdl2_image::LoadTexture;
 
-/// A `DrawOp` is the abstraction of a single, atomic operation in the process
-/// of drawing a scene. "Atomic" here means that a DrawOp has a single, defined
-/// position in the scene's z-order, and is thus is either completely in front
-/// of or completely behind any other DrawOp. Rendering one frame is then the
-/// process of creating a set of DrawOps, sorting them, and executing them.
-pub trait DrawOp {
-    fn draw(&self, renderer: &mut Renderer);
+/// A `Visible` object can be shown using a renderer. It is atomic with respect
+/// to z-ordering, i.e., it is always entirely behind or entirely in front of
+/// other visible objects. Rendering a frame or scene is a process of creating
+/// many Visibles, sorting them by layer and z-index, and showing them.
+pub trait Visible {
+    fn show(&self, renderer: &mut Renderer);
 }
 
-/// A simple DrawOp that just renders a single texture. This implementation is
+/// A Visible object that consists of a single texture. This implementation is
 /// especially horrible, since it loads the texture from disk every time it
-/// is drawn. (TODO: add texture cache to the DrawOp trait?)
-pub struct DrawSprite {
+/// is shown. (TODO: add texture cache to the Visible trait?)
+pub struct Sprite {
     name: String,
     pos: (i32, i32),
 }
 
-impl DrawSprite {
-    pub fn new(name: &str, pos: (i32, i32)) -> DrawSprite {
-        DrawSprite {
+impl Sprite {
+    pub fn new(name: &str, pos: (i32, i32)) -> Sprite {
+        Sprite {
             name: name.into(),
             pos: pos
         }
     }
 }
 
-impl DrawOp for DrawSprite {
-    fn draw(&self, renderer: &mut Renderer) {
+impl Visible for Sprite {
+    fn show(&self, renderer: &mut Renderer) {
         // XXX: loading the texture here is stupid, of course
         let path = self.name.clone() + ".png";
         let path = Path::new(&path);

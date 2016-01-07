@@ -7,7 +7,7 @@ use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use snes_spc::SnesSpc;
 
 mod renderer;
-use renderer::{DrawOp, DrawSprite};
+use renderer::{Visible, Sprite};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -52,7 +52,7 @@ fn main() {
     audio.resume();
 
     // Draw a sprite
-    let starman = DrawSprite::new("assets/starmanjr_lg", (300, 100));
+    let starman = Sprite::new("assets/starmanjr_lg", (300, 100));
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
@@ -64,7 +64,7 @@ fn main() {
                 _ => { }
             }
         }
-        starman.draw(&mut renderer);
+        starman.show(&mut renderer);
         renderer.present();
     }
 }
