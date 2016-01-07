@@ -1,6 +1,3 @@
-// Some draw operations for a renderer
-// TODO rename this file
-
 extern crate sdl2;
 extern crate sdl2_image;
 
