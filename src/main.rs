@@ -7,7 +7,7 @@ use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use snes_spc::SnesSpc;
 
 mod scene;
-use scene::{Visible, Sprite};
+use scene::{Sprite, Scene};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -64,7 +64,9 @@ fn main() {
                 _ => { }
             }
         }
-        starman.show(&mut renderer);
-        renderer.present();
+
+        let mut scene = Scene::new(&mut renderer);
+        scene.add(&starman);
+        scene.present();
     }
 }

@@ -14,6 +14,35 @@ pub trait Visible {
     fn show(&self, renderer: &mut Renderer);
 }
 
+/// A Scene is a places where Visibles may be shown.
+pub struct Scene<'a> {
+    renderer: &'a mut Renderer<'static>,
+    elements: Vec<&'a Visible>,
+}
+
+impl<'a> Scene<'a> {
+    pub fn new(renderer: &'a mut Renderer<'static>) -> Scene<'a> {
+        Scene {
+            renderer: renderer,
+            elements: Vec::new(),
+        }
+    }
+
+    pub fn add(&mut self, element: &'a Visible) {
+        self.elements.push(element);
+    }
+
+    pub fn present(&mut self) {
+        self.renderer.clear();
+
+        for element in self.elements.iter() {
+            element.show(self.renderer);
+        }
+
+        self.renderer.present();
+    }
+}
+
 /// A Visible object that consists of a single texture. This implementation is
 /// especially horrible, since it loads the texture from disk every time it
 /// is shown. (TODO: add texture cache to the Visible trait?)
