@@ -11,13 +11,15 @@ use self::sdl2_image::LoadTexture;
 /// other visible objects. Rendering a frame or scene is a process of creating
 /// many Visibles, sorting them by layer and z-index, and showing them.
 pub trait Visible {
-    fn show(&self, renderer: &mut Renderer);
+    fn show(&self, offset: (i32, i32), renderer: &mut Renderer);
 }
 
 /// A Scene is a places where Visibles may be shown.
 pub struct Scene<'a> {
     renderer: &'a mut Renderer<'static>,
     elements: Vec<&'a Visible>,
+    // TODO: should probably specify full viewport rectangle
+    offset: (i32, i32),
 }
 
 impl<'a> Scene<'a> {
@@ -25,7 +27,12 @@ impl<'a> Scene<'a> {
         Scene {
             renderer: renderer,
             elements: Vec::new(),
+            offset: (0, 0),
         }
+    }
+
+    pub fn set_viewport(&mut self, offset: (i32, i32)) {
+        self.offset = offset;
     }
 
     pub fn add(&mut self, element: &'a Visible) {
@@ -36,7 +43,7 @@ impl<'a> Scene<'a> {
         self.renderer.clear();
 
         for element in self.elements.iter() {
-            element.show(self.renderer);
+            element.show(self.offset, self.renderer);
         }
 
         self.renderer.present();
@@ -61,7 +68,7 @@ impl Sprite {
 }
 
 impl Visible for Sprite {
-    fn show(&self, renderer: &mut Renderer) {
+    fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
         // XXX: loading the texture here is stupid, of course
         let path = self.name.clone() + ".png";
         let path = Path::new(&path);
@@ -69,7 +76,7 @@ impl Visible for Sprite {
 
         let query = tex.query();
         let (x, y) = self.pos;
-        let dst = Rect::new_unwrap(x, y, query.width, query.height);
+        let dst = Rect::new_unwrap(x+offx, y+offy, query.width, query.height);
         renderer.copy(&tex, None, Some(dst));
     }
 }

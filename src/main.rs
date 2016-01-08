@@ -52,6 +52,7 @@ fn main() {
     audio.resume();
 
     // Draw a sprite
+    let (mut x, mut y) = (0, 0);
     let starman = Sprite::new("assets/starmanjr_lg", (300, 100));
 
     'mainloop: loop {
@@ -61,11 +62,27 @@ fn main() {
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                     break 'mainloop
                 },
+                Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
+                    y -= 8;
+                },
+                Event::KeyDown {keycode: Some(Keycode::Down), ..} => {
+                    y += 8;
+                },
+                Event::KeyDown {keycode: Some(Keycode::Left), ..} => {
+                    x -= 8;
+                },
+                Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
+                    x += 8;
+                },
                 _ => { }
             }
         }
 
+        // TODO: Scene probably shouldn't "contain" visible elements; rather,
+        // the texture/rendering responsibility should be split from the scene
+        // management and z-ordering responsibility.
         let mut scene = Scene::new(&mut renderer);
+        scene.set_viewport((x, y));
         scene.add(&starman);
         scene.present();
     }
