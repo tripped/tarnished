@@ -29,10 +29,12 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer()
+    let renderer = window.renderer()
         .accelerated()
         .build()
         .unwrap();
+
+    let mut renderer = scene::Renderer::new(renderer);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
@@ -53,7 +55,8 @@ fn main() {
 
     // Draw a sprite
     let (mut x, mut y) = (0, 0);
-    let starman = Sprite::new("assets/starmanjr_lg", (300, 100));
+    let starman = Sprite::new("assets/starmanjr_lg", (100, 100));
+    let starman2 = Sprite::new("assets/starmanjr_lg", (300, 100));
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
@@ -78,12 +81,10 @@ fn main() {
             }
         }
 
-        // TODO: Scene probably shouldn't "contain" visible elements; rather,
-        // the texture/rendering responsibility should be split from the scene
-        // management and z-ordering responsibility.
-        let mut scene = Scene::new(&mut renderer);
+        let mut scene = Scene::new();
         scene.set_viewport((x, y));
         scene.add(&starman);
-        scene.present();
+        scene.add(&starman2);
+        scene.present(&mut renderer);
     }
 }
