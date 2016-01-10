@@ -1,8 +1,10 @@
 extern crate sdl2;
 extern crate sdl2_image;
 
-use std::path::Path;
+use std::cmp::Ordering;
 use std::collections::hash_map::HashMap;
+use std::path::Path;
+
 use self::sdl2::rect::Rect;
 use self::sdl2::render::Texture;
 use self::sdl2_image::LoadTexture;
@@ -70,7 +72,33 @@ pub trait Visible {
     fn show(&self, offset: (i32, i32), renderer: &mut Renderer);
 }
 
-/// A Scene is a places where Visibles may be shown.
+/// A scene Instruction is a Visible and a z-index at which it is to be shown.
+struct Instruction<'a> {
+    z_index: i32,
+    object: &'a Visible,
+}
+
+impl<'a> Ord for Instruction<'a> {
+    fn cmp(&self, other: &Instruction) -> Ordering {
+        self.z_index.cmp(&other.z_index)
+    }
+}
+
+impl<'a> PartialOrd for Instruction<'a> {
+    fn partial_cmp(&self, other: &Instruction) -> Option<Ordering> {
+        self.z_index.partial_cmp(&other.z_index)
+    }
+}
+
+impl<'a> PartialEq for Instruction<'a> {
+    fn eq(&self, other: &Instruction) -> bool {
+        self.z_index == other.z_index
+    }
+}
+
+impl<'a> Eq for Instruction<'a> { }
+
+/// A Scene is a place where Visibles may be shown.
 pub struct Scene<'a> {
     elements: Vec<&'a Visible>,
     // TODO: should probably specify full viewport rectangle
