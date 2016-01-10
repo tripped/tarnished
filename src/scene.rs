@@ -2,6 +2,7 @@ extern crate sdl2;
 extern crate sdl2_image;
 
 use std::cmp::Ordering;
+use std::collections::btree_set::BTreeSet;
 use std::collections::hash_map::HashMap;
 use std::path::Path;
 
@@ -100,7 +101,7 @@ impl<'a> Eq for Instruction<'a> { }
 
 /// A Scene is a place where Visibles may be shown.
 pub struct Scene<'a> {
-    elements: Vec<&'a Visible>,
+    elements: BTreeSet<Instruction<'a>>,
     // TODO: should probably specify full viewport rectangle
     offset: (i32, i32),
 }
@@ -108,7 +109,7 @@ pub struct Scene<'a> {
 impl<'a> Scene<'a> {
     pub fn new() -> Scene<'a> {
         Scene {
-            elements: Vec::new(),
+            elements: BTreeSet::new(),
             offset: (0, 0),
         }
     }
@@ -117,15 +118,18 @@ impl<'a> Scene<'a> {
         self.offset = offset;
     }
 
-    pub fn add(&mut self, element: &'a Visible) {
-        self.elements.push(element);
+    pub fn add(&mut self, element: &'a Visible, z_index: i32) {
+        self.elements.insert(Instruction {
+            z_index: z_index,
+            object: element
+        });
     }
 
     pub fn present(&mut self, renderer: &mut Renderer) {
         renderer.clear();
 
         for element in self.elements.iter() {
-            element.show(self.offset, renderer);
+            element.object.show(self.offset, renderer);
         }
 
         renderer.present();
