@@ -136,9 +136,7 @@ impl<'a> Scene<'a> {
     }
 }
 
-/// A Visible object that consists of a single texture. This implementation is
-/// especially horrible, since it loads the texture from disk every time it
-/// is shown. (TODO: add texture cache to the Visible trait?)
+/// A Visible object that consists of a single texture.
 pub struct Sprite {
     name: String,
     pos: (i32, i32),
