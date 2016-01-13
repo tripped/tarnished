@@ -2,8 +2,8 @@ extern crate sdl2;
 extern crate sdl2_image;
 
 use std::cmp::Ordering;
-use std::collections::binary_heap::BinaryHeap;
-use std::collections::hash_map::HashMap;
+use std::collections::BinaryHeap;
+use std::collections::HashMap;
 use std::path::Path;
 
 use self::sdl2::rect::Rect;
