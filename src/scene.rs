@@ -63,6 +63,12 @@ impl Renderer {
 
         self.renderer.copy(&tex, None, Some(dst));
     }
+
+    pub fn draw_stretched(&mut self, asset: &str, dst: Rect) {
+        self.ensure_texture(asset);
+        let tex = self.textures.get(&asset.to_string()).unwrap();
+        self.renderer.copy(&tex, None, Some(dst));
+    }
 }
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
@@ -155,5 +161,27 @@ impl Visible for Sprite {
     fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
         let (x, y) = self.pos;
         renderer.draw(&self.name, (x+offx, y+offy));
+    }
+}
+
+pub struct StretchedSprite {
+    name: String,
+    rc: Rect,
+}
+
+impl StretchedSprite {
+    pub fn new(name: &str, (x, y, w, h): (i32, i32, u32, u32))
+            -> StretchedSprite {
+        StretchedSprite {
+            name: name.into(),
+            rc: Rect::new_unwrap(x, y, w, h),
+        }
+    }
+}
+
+impl Visible for StretchedSprite {
+    fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
+        let dst = self.rc.offset(offx, offy).unwrap();
+        renderer.draw_stretched(&self.name, dst);
     }
 }
