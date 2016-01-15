@@ -9,7 +9,8 @@ use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
 mod scene;
-use scene::{Sprite, Scene};
+use scene::{Scene, Sprite,
+    sprite, left, right, top, bottom, hstretch, vstretch};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -40,33 +41,22 @@ impl Textbox {
     }
 
     fn render(&self) -> Vec<Sprite> {
-        // XXX: allow querying these dimensions from asset system, or
-        // provide a way to draw with configurable alignment
-        let cw = 8;
-        let ch = 8;
         let x = self.bounds.x();
         let y = self.bounds.y();
         let w = self.bounds.width() as i32;
         let h = self.bounds.height() as i32;
 
-        // XXX: sprite instructions don't have stretched drawing; perhaps
-        // the right way to do this is with more primitives, e.g., Sprite,
-        // Stretched, Flipped, etc. Asset-relative instructions might be
-        // neat too, in a hypothetical metalanguage:
-        //      base(self.base,
-        //          sprite("tl", (x-cw, y-ch)),
-        //          stretched(sprite("t", (x, y-ch)), (w, 8)),
-        //          hflipped(sprite("tl", (x+w, y-ch))))
-        //          
         vec![
-            Sprite::new(&self.part("tl"), (x-cw, y-ch)),
-            Sprite::new(&self.part("t"),  (x,    y-ch)),
-            Sprite::new(&self.part("tr"), (x+w,  y-ch)),
-            Sprite::new(&self.part("l"),  (x-cw, y)),
-            Sprite::new(&self.part("r"),  (x+w,  y)),
-            Sprite::new(&self.part("bl"), (x-cw, y+h)),
-            Sprite::new(&self.part("b"),  (x,    y+h)),
-            Sprite::new(&self.part("br"), (x+w,  y+h)),
+            sprite(&self.part("tl"), right(x), bottom(y)),
+            sprite(&self.part("t"), hstretch(x, x+w), bottom(y)),
+            sprite(&self.part("tr"), left(x+w), bottom(y)),
+
+            sprite(&self.part("l"), right(x), vstretch(y, y+h)),
+            sprite(&self.part("r"), left(x+w), vstretch(y, y+h)),
+
+            sprite(&self.part("bl"), right(x), top(y+h)),
+            sprite(&self.part("b"), hstretch(x, x+w), top(y+h)),
+            sprite(&self.part("br"), left(x+w), top(y+h)),
         ]
     }
 }
@@ -106,8 +96,8 @@ fn main() {
 
     // Draw a sprite
     let (mut x, mut y) = (0, 0);
-    let starman = Sprite::new("assets/starmanjr_lg", (280, 100));
-    let starman2 = Sprite::new("assets/starmanjr_lg", (300, 100));
+    let starman = sprite("assets/starmanjr_lg", left(280), top(100));
+    let starman2 = sprite("assets/starmanjr_lg", left(300), top(100));
     let textbox = Textbox::new("assets/box",
                                Rect::new_unwrap(16, 16, 64, 48));
 

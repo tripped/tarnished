@@ -10,6 +10,57 @@ use self::sdl2::rect::Rect;
 use self::sdl2::render::Texture;
 use self::sdl2_image::LoadTexture;
 
+/// Specifies a draw rect's horizontal position and alignment
+#[derive(Copy, Clone)]
+pub enum HorizontalPlacement {
+    Left(i32),
+    Right(i32),
+    Center(i32),
+    Stretch(i32, i32),
+}
+
+/// Specifies a draw rect's vertical position and alignment
+#[derive(Copy, Clone)]
+pub enum VerticalPlacement {
+    Top(i32),
+    Bottom(i32),
+    Center(i32),
+    Stretch(i32, i32),
+}
+
+pub fn left(x: i32) -> HorizontalPlacement {
+    HorizontalPlacement::Left(x)
+}
+
+pub fn right(x: i32) -> HorizontalPlacement {
+    HorizontalPlacement::Right(x)
+}
+
+pub fn hcenter(x: i32) -> HorizontalPlacement {
+    HorizontalPlacement::Center(x)
+}
+
+pub fn hstretch(x1: i32, x2: i32) -> HorizontalPlacement {
+    HorizontalPlacement::Stretch(x1, x2)
+}
+
+pub fn top(y: i32) -> VerticalPlacement {
+    VerticalPlacement::Top(y)
+}
+
+pub fn bottom(y: i32) -> VerticalPlacement {
+    VerticalPlacement::Bottom(y)
+}
+
+pub fn vcenter(y: i32) -> VerticalPlacement {
+    VerticalPlacement::Center(y)
+}
+
+pub fn vstretch(y1: i32, y2: i32) -> VerticalPlacement {
+    VerticalPlacement::Stretch(y1, y2)
+}
+
+/// Renderer: 1. n. A person or thing that renders.
 pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
     textures: HashMap<String, Texture>,
@@ -53,15 +104,34 @@ impl Renderer {
             .or_insert(load_texture(asset, &self.renderer));
     }
 
-    pub fn draw(&mut self, asset: &str, (x, y): (i32, i32)) {
+    pub fn draw(&mut self, asset: &str, 
+                hpos: HorizontalPlacement,
+                vpos: VerticalPlacement) {
         self.ensure_texture(asset);
         let tex = self.textures.get(&asset.to_string()).unwrap();
 
-        // Default draw is to render at full asset size
         let query = tex.query();
-        let dst = Rect::new_unwrap(x, y, query.width, query.height);
+        let width = query.width as i32;
+        let height = query.height as i32;
 
-        self.renderer.copy(&tex, None, Some(dst));
+        let (x1, x2) = match hpos {
+            HorizontalPlacement::Left(x) => (x, x + width),
+            HorizontalPlacement::Right(x) => (x - width, x),
+            HorizontalPlacement::Center(x) => (x - width/2, x + width/2),
+            HorizontalPlacement::Stretch(x1, x2) => (x1, x2),
+        };
+
+        let (y1, y2) = match vpos {
+            VerticalPlacement::Top(y) => (y, y + height),
+            VerticalPlacement::Bottom(y) => (y - height, y),
+            VerticalPlacement::Center(y) => (y - height/2, y + height/2),
+            VerticalPlacement::Stretch(y1, y2) => (y1, y2),
+        };
+
+        // XXX: check these bounds; we'll just panic in the case of inversion
+        let dst = Rect::new(x1, y1,
+            (x2 - x1) as u32, (y2 - y1) as u32).unwrap();
+        self.renderer.copy(&tex, None, dst);
     }
 
     pub fn draw_stretched(&mut self, asset: &str, dst: Rect) {
@@ -145,43 +215,27 @@ impl<'a> Scene<'a> {
 /// A Visible object that consists of a single texture.
 pub struct Sprite {
     name: String,
-    pos: (i32, i32),
+    hpos: HorizontalPlacement,
+    vpos: VerticalPlacement,
 }
 
 impl Sprite {
-    pub fn new(name: &str, pos: (i32, i32)) -> Sprite {
+    pub fn new(name: &str, h: HorizontalPlacement, v: VerticalPlacement)
+        -> Sprite {
         Sprite {
             name: name.into(),
-            pos: pos
+            hpos: h,
+            vpos: v,
         }
     }
+}
+
+pub fn sprite(name: &str, h: HorizontalPlacement, v: VerticalPlacement) -> Sprite {
+    Sprite::new(name, h, v)
 }
 
 impl Visible for Sprite {
     fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
-        let (x, y) = self.pos;
-        renderer.draw(&self.name, (x+offx, y+offy));
-    }
-}
-
-pub struct StretchedSprite {
-    name: String,
-    rc: Rect,
-}
-
-impl StretchedSprite {
-    pub fn new(name: &str, (x, y, w, h): (i32, i32, u32, u32))
-            -> StretchedSprite {
-        StretchedSprite {
-            name: name.into(),
-            rc: Rect::new_unwrap(x, y, w, h),
-        }
-    }
-}
-
-impl Visible for StretchedSprite {
-    fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
-        let dst = self.rc.offset(offx, offy).unwrap();
-        renderer.draw_stretched(&self.name, dst);
+        renderer.draw(&self.name, self.hpos, self.vpos);
     }
 }
