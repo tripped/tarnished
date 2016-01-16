@@ -101,12 +101,6 @@ impl Renderer {
             (x2 - x1) as u32, (y2 - y1) as u32).unwrap();
         self.renderer.copy(&tex, None, dst);
     }
-
-    pub fn draw_stretched(&mut self, asset: &str, dst: Rect) {
-        self.ensure_texture(asset);
-        let tex = self.textures.get(&asset.to_string()).unwrap();
-        self.renderer.copy(&tex, None, Some(dst));
-    }
 }
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
