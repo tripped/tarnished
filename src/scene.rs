@@ -32,6 +32,7 @@ pub enum VPos {
 pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
     textures: HashMap<String, Texture>,
+    offset: (i32, i32),
 }
 
 fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
@@ -48,7 +49,12 @@ impl Renderer {
         Renderer {
             renderer: renderer,
             textures: HashMap::new(),
+            offset: (0, 0),
         }
+    }
+
+    pub fn set_viewport(&mut self, offset: (i32, i32)) {
+        self.offset = offset;
     }
 
     pub fn clear(&mut self) {
@@ -72,9 +78,7 @@ impl Renderer {
             .or_insert(load_texture(asset, &self.renderer));
     }
 
-    pub fn draw(&mut self, asset: &str, 
-                hpos: HPos,
-                vpos: VPos) {
+    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
         self.ensure_texture(asset);
         let tex = self.textures.get(&asset.to_string()).unwrap();
 
@@ -97,9 +101,11 @@ impl Renderer {
         };
 
         // XXX: check these bounds; we'll just panic in the case of inversion
-        let dst = Rect::new(x1, y1,
-            (x2 - x1) as u32, (y2 - y1) as u32).unwrap();
-        self.renderer.copy(&tex, None, dst);
+        let (offx, offy) = self.offset;
+        let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
+        let dst = dst.offset(offx, offy).unwrap();
+
+        self.renderer.copy(&tex, None, Some(dst));
     }
 }
 
@@ -108,7 +114,7 @@ impl Renderer {
 /// other visible objects. Rendering a frame or scene is a process of creating
 /// many Visibles, sorting them by layer and z-index, and showing them.
 pub trait Visible {
-    fn show(&self, offset: (i32, i32), renderer: &mut Renderer);
+    fn show(&self, renderer: &mut Renderer);
 }
 
 /// A scene Instruction is a Visible and a z-index at which it is to be shown.
@@ -165,9 +171,10 @@ impl<'a> Scene<'a> {
 
     pub fn present(&mut self, renderer: &mut Renderer) {
         renderer.clear();
+        renderer.set_viewport(self.offset);
 
         for element in self.elements.iter() {
-            element.object.show(self.offset, renderer);
+            element.object.show(renderer);
         }
 
         renderer.present();
@@ -197,7 +204,7 @@ pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
 }
 
 impl Visible for Sprite {
-    fn show(&self, (offx, offy): (i32, i32), renderer: &mut Renderer) {
+    fn show(&self, renderer: &mut Renderer) {
         renderer.draw(&self.name, self.hpos, self.vpos);
     }
 }
