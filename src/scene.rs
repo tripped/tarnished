@@ -169,12 +169,17 @@ impl<'a> Scene<'a> {
         });
     }
 
+    /// Presents the scene onto the specified renderer.
+    /// Consumes the scene's contents in the process.
     pub fn present(&mut self, renderer: &mut Renderer) {
         renderer.clear();
         renderer.set_viewport(self.offset);
 
-        for element in self.elements.iter() {
-            element.object.show(renderer);
+        loop {
+            match self.elements.pop() {
+                Some(element) => element.object.show(renderer),
+                None => break
+            }
         }
 
         renderer.present();
