@@ -55,7 +55,7 @@ impl Textbox {
             sprite(&self.part("r"),  HPos::Left(r),       VPos::Stretch(y, h)),
             sprite(&self.part("bl"), HPos::Right(x),      VPos::Top(b)),
             sprite(&self.part("b"),  HPos::Stretch(x, w), VPos::Top(b)),
-            sprite(&self.part("br"), HPos::Right(r),      VPos::Top(b)),
+            sprite(&self.part("br"), HPos::Left(r),      VPos::Top(b)),
         ]
     }
 }
@@ -98,7 +98,7 @@ fn main() {
     let starman = sprite("assets/starmanjr_lg",
                          HPos::Center(400), VPos::Center(250));
     let textbox = Textbox::new("assets/box",
-                               Rect::new_unwrap(16, 16, 64, 48));
+                               Rect::new_unwrap(128, 64, 256, 128));
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
@@ -130,12 +130,12 @@ fn main() {
 
         let mut scene = Scene::new();
         scene.set_viewport((x, y));
-        scene.add(&starman, 1);
+        scene.add(&starman, 0);
 
         // XXX: doesn't make much sense to specify separate z-index for
         // every piece of this textbox when rendering piecewise to scene
         for p in &rendered_box {
-            scene.add(p, 2);
+            scene.add(p, 1);
         }
 
         scene.present(&mut renderer);
