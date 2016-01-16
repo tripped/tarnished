@@ -9,8 +9,7 @@ use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
 mod scene;
-use scene::{Scene, Sprite,
-    sprite, left, right, top, bottom, hstretch, vstretch};
+use scene::{Scene, Sprite, sprite, HPos, VPos};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -41,22 +40,22 @@ impl Textbox {
     }
 
     fn render(&self) -> Vec<Sprite> {
+        let w = self.bounds.width() as usize;
+        let h = self.bounds.height() as usize;
         let x = self.bounds.x();
         let y = self.bounds.y();
-        let w = self.bounds.width() as i32;
-        let h = self.bounds.height() as i32;
+        let r = x + w as i32;
+        let b = y + h as i32;
 
         vec![
-            sprite(&self.part("tl"), right(x), bottom(y)),
-            sprite(&self.part("t"), hstretch(x, x+w), bottom(y)),
-            sprite(&self.part("tr"), left(x+w), bottom(y)),
-
-            sprite(&self.part("l"), right(x), vstretch(y, y+h)),
-            sprite(&self.part("r"), left(x+w), vstretch(y, y+h)),
-
-            sprite(&self.part("bl"), right(x), top(y+h)),
-            sprite(&self.part("b"), hstretch(x, x+w), top(y+h)),
-            sprite(&self.part("br"), left(x+w), top(y+h)),
+            sprite(&self.part("tl"), HPos::Right(x),      VPos::Bottom(y)),
+            sprite(&self.part("t"),  HPos::Stretch(x, w), VPos::Bottom(y)),
+            sprite(&self.part("tr"), HPos::Left(r),       VPos::Bottom(y)),
+            sprite(&self.part("l"),  HPos::Right(x),      VPos::Stretch(y, h)),
+            sprite(&self.part("r"),  HPos::Left(r),       VPos::Stretch(y, h)),
+            sprite(&self.part("bl"), HPos::Right(x),      VPos::Top(b)),
+            sprite(&self.part("b"),  HPos::Stretch(x, w), VPos::Top(b)),
+            sprite(&self.part("br"), HPos::Right(r),      VPos::Top(b)),
         ]
     }
 }
@@ -96,8 +95,8 @@ fn main() {
 
     // Draw a sprite
     let (mut x, mut y) = (0, 0);
-    let starman = sprite("assets/starmanjr_lg", left(280), top(100));
-    let starman2 = sprite("assets/starmanjr_lg", left(300), top(100));
+    let starman = sprite("assets/starmanjr_lg",
+                         HPos::Center(400), VPos::Center(250));
     let textbox = Textbox::new("assets/box",
                                Rect::new_unwrap(16, 16, 64, 48));
 
@@ -132,7 +131,6 @@ fn main() {
         let mut scene = Scene::new();
         scene.set_viewport((x, y));
         scene.add(&starman, 1);
-        scene.add(&starman2, 0);
 
         // XXX: doesn't make much sense to specify separate z-index for
         // every piece of this textbox when rendering piecewise to scene

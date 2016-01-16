@@ -12,52 +12,20 @@ use self::sdl2_image::LoadTexture;
 
 /// Specifies a draw rect's horizontal position and alignment
 #[derive(Copy, Clone)]
-pub enum HorizontalPlacement {
+pub enum HPos {
     Left(i32),
     Right(i32),
     Center(i32),
-    Stretch(i32, i32),
+    Stretch(i32, usize),
 }
 
 /// Specifies a draw rect's vertical position and alignment
 #[derive(Copy, Clone)]
-pub enum VerticalPlacement {
+pub enum VPos {
     Top(i32),
     Bottom(i32),
     Center(i32),
-    Stretch(i32, i32),
-}
-
-pub fn left(x: i32) -> HorizontalPlacement {
-    HorizontalPlacement::Left(x)
-}
-
-pub fn right(x: i32) -> HorizontalPlacement {
-    HorizontalPlacement::Right(x)
-}
-
-pub fn hcenter(x: i32) -> HorizontalPlacement {
-    HorizontalPlacement::Center(x)
-}
-
-pub fn hstretch(x1: i32, x2: i32) -> HorizontalPlacement {
-    HorizontalPlacement::Stretch(x1, x2)
-}
-
-pub fn top(y: i32) -> VerticalPlacement {
-    VerticalPlacement::Top(y)
-}
-
-pub fn bottom(y: i32) -> VerticalPlacement {
-    VerticalPlacement::Bottom(y)
-}
-
-pub fn vcenter(y: i32) -> VerticalPlacement {
-    VerticalPlacement::Center(y)
-}
-
-pub fn vstretch(y1: i32, y2: i32) -> VerticalPlacement {
-    VerticalPlacement::Stretch(y1, y2)
+    Stretch(i32, usize),
 }
 
 /// Renderer: 1. n. A person or thing that renders.
@@ -105,8 +73,8 @@ impl Renderer {
     }
 
     pub fn draw(&mut self, asset: &str, 
-                hpos: HorizontalPlacement,
-                vpos: VerticalPlacement) {
+                hpos: HPos,
+                vpos: VPos) {
         self.ensure_texture(asset);
         let tex = self.textures.get(&asset.to_string()).unwrap();
 
@@ -115,17 +83,17 @@ impl Renderer {
         let height = query.height as i32;
 
         let (x1, x2) = match hpos {
-            HorizontalPlacement::Left(x) => (x, x + width),
-            HorizontalPlacement::Right(x) => (x - width, x),
-            HorizontalPlacement::Center(x) => (x - width/2, x + width/2),
-            HorizontalPlacement::Stretch(x1, x2) => (x1, x2),
+            HPos::Left(x) => (x, x + width),
+            HPos::Right(x) => (x - width, x),
+            HPos::Center(x) => (x - width/2, x + width/2),
+            HPos::Stretch(x, w) => (x, x+w as i32),
         };
 
         let (y1, y2) = match vpos {
-            VerticalPlacement::Top(y) => (y, y + height),
-            VerticalPlacement::Bottom(y) => (y - height, y),
-            VerticalPlacement::Center(y) => (y - height/2, y + height/2),
-            VerticalPlacement::Stretch(y1, y2) => (y1, y2),
+            VPos::Top(y) => (y, y + height),
+            VPos::Bottom(y) => (y - height, y),
+            VPos::Center(y) => (y - height/2, y + height/2),
+            VPos::Stretch(y, h) => (y, y+h as i32),
         };
 
         // XXX: check these bounds; we'll just panic in the case of inversion
@@ -215,12 +183,12 @@ impl<'a> Scene<'a> {
 /// A Visible object that consists of a single texture.
 pub struct Sprite {
     name: String,
-    hpos: HorizontalPlacement,
-    vpos: VerticalPlacement,
+    hpos: HPos,
+    vpos: VPos,
 }
 
 impl Sprite {
-    pub fn new(name: &str, h: HorizontalPlacement, v: VerticalPlacement)
+    pub fn new(name: &str, h: HPos, v: VPos)
         -> Sprite {
         Sprite {
             name: name.into(),
@@ -230,7 +198,7 @@ impl Sprite {
     }
 }
 
-pub fn sprite(name: &str, h: HorizontalPlacement, v: VerticalPlacement) -> Sprite {
+pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
     Sprite::new(name, h, v)
 }
 
