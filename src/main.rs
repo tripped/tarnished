@@ -1,5 +1,6 @@
 extern crate sdl2;
 extern crate snes_spc;
+extern crate time;
 
 use std::path::Path;
 use sdl2::event::Event;
@@ -100,6 +101,9 @@ fn main() {
     let textbox = Textbox::new("assets/box",
                                Rect::new_unwrap(128, 64, 256, 128));
 
+    let mut frames = 0u32;
+    let start = time::precise_time_ns();
+
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
@@ -139,5 +143,12 @@ fn main() {
         }
 
         scene.present(&mut renderer);
+
+        frames += 1;
     }
+
+    let end = time::precise_time_ns();
+    let fps = (frames as f64 / ((end - start) as f64 / 1e9)) as u32;
+    println!("Rendered {} frames in {} ns; effective: {} fps",
+             frames, end - start, fps);
 }
