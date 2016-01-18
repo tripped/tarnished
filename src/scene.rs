@@ -100,7 +100,6 @@ impl Renderer {
             VPos::Stretch(y, h) => (y, y+h as i32),
         };
 
-        // XXX: check these bounds; we'll just panic in the case of inversion
         let (offx, offy) = self.offset;
         let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
         let dst = dst.offset(offx, offy).unwrap();
