@@ -73,6 +73,27 @@ impl Textbox {
     }
 }
 
+/// A grid of cells, drawn from a tileset.
+struct MapLayer {
+    asset: String,
+    tile_w: u16,
+    tile_h: u16,
+    width: u32,
+    tiles: Vec<u32>,
+}
+
+impl MapLayer {
+    fn new(asset: &str, (tw, th): (u16, u16), width: u32) -> MapLayer {
+        MapLayer {
+            asset: asset.into(),
+            tile_w: tw,
+            tile_h: th,
+            width: width,
+            tiles: Vec::new(),
+        }
+    }
+}
+
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video = sdl_context.video().unwrap();
