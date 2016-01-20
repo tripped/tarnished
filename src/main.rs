@@ -1,7 +1,12 @@
 extern crate sdl2;
 extern crate snes_spc;
 extern crate time;
+extern crate rustc_serialize;
+extern crate bincode;
 
+use bincode::rustc_serialize::{encode, decode};
+use rustc_serialize::{Encodable, Decodable};
+use rustc_serialize::json;
 use std::path::Path;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -74,6 +79,7 @@ impl Textbox {
 }
 
 /// A grid of cells, drawn from a tileset.
+#[derive(RustcEncodable, RustcDecodable)]
 struct MapLayer {
     asset: String,
     tile_w: u16,
