@@ -78,7 +78,8 @@ impl Renderer {
             .or_insert(load_texture(asset, &self.renderer));
     }
 
-    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
+    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos,
+                src: Option<Rect>) {
         self.ensure_texture(asset);
         let tex = self.textures.get(&asset.to_string()).unwrap();
 
@@ -104,7 +105,7 @@ impl Renderer {
         let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
         let dst = dst.offset(offx, offy).unwrap();
 
-        self.renderer.copy(&tex, None, Some(dst));
+        self.renderer.copy(&tex, src, Some(dst));
     }
 }
 
@@ -190,6 +191,7 @@ pub struct Sprite {
     name: String,
     hpos: HPos,
     vpos: VPos,
+    src: Option<Rect>,
 }
 
 impl Sprite {
@@ -199,6 +201,7 @@ impl Sprite {
             name: name.into(),
             hpos: h,
             vpos: v,
+            src: None,
         }
     }
 }
@@ -209,6 +212,6 @@ pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
 
 impl Visible for Sprite {
     fn show(&self, renderer: &mut Renderer) {
-        renderer.draw(&self.name, self.hpos, self.vpos);
+        renderer.draw(&self.name, self.hpos, self.vpos, self.src);
     }
 }
