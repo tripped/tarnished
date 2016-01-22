@@ -195,19 +195,25 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(name: &str, h: HPos, v: VPos)
+    pub fn new(name: &str, h: HPos, v: VPos, src: Option<Rect>)
         -> Sprite {
         Sprite {
             name: name.into(),
             hpos: h,
             vpos: v,
-            src: None,
+            src: src,
         }
     }
 }
 
 pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
-    Sprite::new(name, h, v)
+    Sprite::new(name, h, v, None)
+}
+
+/// A convenient function for tile-style drawing. Assumes top-left origin
+/// with standard alignment.
+pub fn tile(name: &str, x: i32, y: i32, src: Rect) -> Sprite {
+    Sprite::new(name, HPos::Left(x), VPos::Top(y), Some(src))
 }
 
 impl Visible for Sprite {
