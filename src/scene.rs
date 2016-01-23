@@ -78,8 +78,7 @@ impl Renderer {
             .or_insert(load_texture(asset, &self.renderer));
     }
 
-    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos,
-                src: Option<Rect>) {
+    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
         self.ensure_texture(asset);
         let tex = self.textures.get(&asset.to_string()).unwrap();
 
@@ -105,7 +104,7 @@ impl Renderer {
         let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
         let dst = dst.offset(offx, offy).unwrap();
 
-        self.renderer.copy(&tex, src, Some(dst));
+        self.renderer.copy(&tex, None, Some(dst));
     }
 
     /// Draw the nth tile of specified size from a given image asset, at a
@@ -204,33 +203,60 @@ pub struct Sprite {
     name: String,
     hpos: HPos,
     vpos: VPos,
-    src: Option<Rect>,
 }
 
 impl Sprite {
-    pub fn new(name: &str, h: HPos, v: VPos, src: Option<Rect>)
+    pub fn new(name: &str, h: HPos, v: VPos)
         -> Sprite {
         Sprite {
             name: name.into(),
             hpos: h,
             vpos: v,
-            src: src,
         }
     }
 }
 
 pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
-    Sprite::new(name, h, v, None)
-}
-
-/// A convenient function for tile-style drawing. Assumes top-left origin
-/// with standard alignment.
-pub fn tile(name: &str, x: i32, y: i32, src: Rect) -> Sprite {
-    Sprite::new(name, HPos::Left(x), VPos::Top(y), Some(src))
+    Sprite::new(name, h, v)
 }
 
 impl Visible for Sprite {
     fn show(&self, renderer: &mut Renderer) {
-        renderer.draw(&self.name, self.hpos, self.vpos, self.src);
+        renderer.draw(&self.name, self.hpos, self.vpos);
+    }
+}
+
+/// A Visible object that is a tile drawn from a tileset.
+pub struct Tile {
+    tileset: String,
+    tile: u32,
+    width: u32,
+    height: u32,
+    x: i32,
+    y: i32,
+}
+
+impl Tile {
+    pub fn new(tileset: &str, tile: u32, w: u32, h: u32,
+               x: i32, y: i32) -> Tile {
+        Tile {
+            tileset: tileset.into(),
+            tile: tile,
+            width: w,
+            height: h,
+            x: x,
+            y: y,
+        }
+    }
+}
+
+pub fn tile(tileset: &str, n: u32, w: u32, h: u32, x: i32, y: i32) -> Tile {
+    Tile::new(tileset, n, w, h, x, y)
+}
+
+impl Visible for Tile {
+    fn show(&self, renderer: &mut Renderer) {
+        renderer.draw_tile(&self.tileset, self.tile, self.width, self.height,
+                      self.x, self.y);
     }
 }
