@@ -107,6 +107,19 @@ impl Renderer {
 
         self.renderer.copy(&tex, src, Some(dst));
     }
+
+    /// Draw the nth tile of specified size from a given image asset, at a
+    /// specific position, assuming top-left alignment.
+    /// XXX: Assumes that tiles are laid out in a single horizontal strip.
+    pub fn draw_tile(&mut self, tileset: &str, n: u32, w: u32, h: u32,
+                     x: i32, y: i32) {
+        self.ensure_texture(tileset);
+        let tex = self.textures.get(&tileset.to_string()).unwrap();
+
+        let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
+        let dst = Rect::new_unwrap(x, y, w, h);
+        self.renderer.copy(&tex, Some(src), Some(dst));
+    }
 }
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
