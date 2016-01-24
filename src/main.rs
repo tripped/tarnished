@@ -15,7 +15,7 @@ use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
 mod scene;
-use scene::{Scene, Sprite, sprite, HPos, VPos};
+use scene::{Scene, Sprite, sprite, Tile, HPos, VPos};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -82,14 +82,14 @@ impl Textbox {
 #[derive(RustcEncodable, RustcDecodable)]
 struct MapLayer {
     asset: String,
-    tile_w: u16,
-    tile_h: u16,
+    tile_w: u32,
+    tile_h: u32,
     width: u32,
     tiles: Vec<u32>,
 }
 
 impl MapLayer {
-    fn new(asset: &str, (tw, th): (u16, u16), width: u32) -> MapLayer {
+    fn new(asset: &str, (tw, th): (u32, u32), width: u32) -> MapLayer {
         MapLayer {
             asset: asset.into(),
             tile_w: tw,
@@ -97,6 +97,18 @@ impl MapLayer {
             width: width,
             tiles: Vec::new(),
         }
+    }
+
+    fn render(&self) -> Vec<Tile> {
+        let mut result = Vec::new();
+        for (i, tile) in self.tiles.iter().enumerate() {
+            let i = i as u32;
+            let x = (i % self.width) * self.tile_w;
+            let y = (i / self.width) * self.tile_h;
+            result.push(Tile::new(&self.asset, *tile,
+                self.tile_w, self.tile_h, x as i32, y as i32));
+        }
+        result
     }
 }
 
@@ -133,12 +145,16 @@ fn main() {
 
     audio.resume();
 
-    // Draw a sprite
+    // Draw some stuff
     let (mut x, mut y) = (0, 0);
+
+    // XXX: the upscaled sprite here is now out of place; add view scaling.
     let starman = sprite("assets/starmanjr_lg",
-                         HPos::Center(400), VPos::Center(250));
+        HPos::Center(400), VPos::Center(250));
     let textbox = Textbox::new("assets/box",
-                               Rect::new_unwrap(128, 64, 256, 128));
+        Rect::new_unwrap(128, 64, 256, 128));
+    let mut map = MapLayer::new("assets/cotp", (16, 16), 32);
+    map.tiles = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
@@ -170,6 +186,7 @@ fn main() {
         // scene borrows references to all the instructions added to it. This
         // is perhaps an API weakness; might end up just boxing visibles.
         let rendered_box = textbox.render();
+        let rendered_map = map.render();
 
         let mut scene = Scene::new();
         scene.set_viewport((x, y));
@@ -179,6 +196,10 @@ fn main() {
         // every piece of this textbox when rendering piecewise to scene
         for p in &rendered_box {
             scene.add(p, 1);
+        }
+
+        for t in &rendered_map {
+            scene.add(t, -1);
         }
 
         scene.present(&mut renderer);
