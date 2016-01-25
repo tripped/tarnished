@@ -116,7 +116,8 @@ impl Renderer {
         let tex = self.textures.get(&tileset.to_string()).unwrap();
 
         let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
-        let dst = Rect::new_unwrap(x, y, w, h);
+        let (offx, offy) = self.offset;
+        let dst = Rect::new_unwrap(x, y, w, h).offset(offx, offy).unwrap();
         self.renderer.copy(&tex, Some(src), Some(dst));
     }
 }
