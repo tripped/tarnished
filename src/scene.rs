@@ -141,13 +141,13 @@ struct Instruction<'a> {
 
 impl<'a> Ord for Instruction<'a> {
     fn cmp(&self, other: &Instruction) -> Ordering {
-        self.z_index.cmp(&other.z_index)
+        other.z_index.cmp(&self.z_index)
     }
 }
 
 impl<'a> PartialOrd for Instruction<'a> {
     fn partial_cmp(&self, other: &Instruction) -> Option<Ordering> {
-        self.z_index.partial_cmp(&other.z_index)
+        other.z_index.partial_cmp(&self.z_index)
     }
 }
 
