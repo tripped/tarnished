@@ -39,6 +39,7 @@ fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
     // TODO: handle assets more intelligently than just appending ".png"
     // TODO: define a wrapper that properly uses AsRef<Path>, because this
     // conversion is rather inconvenient
+    println!("Loading texture `{}`...", asset);
     let path = asset.to_string() + ".png";
     let path = Path::new(&path);
     renderer.load_texture(path).unwrap()
@@ -74,8 +75,10 @@ impl Renderer {
     /// this would be to redesign this system so that renderer and the texture
     /// cache aren't in the same struct.
     fn ensure_texture(&mut self, asset: &str) {
-        self.textures.entry(asset.to_string())
-            .or_insert(load_texture(asset, &self.renderer));
+        if !self.textures.contains_key(asset) {
+            self.textures.insert(asset.into(),
+                load_texture(asset, &self.renderer));
+        }
     }
 
     pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
