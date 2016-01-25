@@ -121,10 +121,12 @@ fn main() {
         .build()
         .unwrap();
 
-    let renderer = window.renderer()
+    let mut renderer = window.renderer()
         .accelerated()
         .build()
         .unwrap();
+
+    renderer.set_scale(2.0, 2.0);
 
     let mut renderer = scene::Renderer::new(renderer);
 
@@ -149,10 +151,10 @@ fn main() {
     let (mut x, mut y) = (0, 0);
 
     // XXX: the upscaled sprite here is now out of place; add view scaling.
-    let starman = sprite("assets/starmanjr_lg",
-        HPos::Center(400), VPos::Center(250));
+    let starman = sprite("assets/starmanjr",
+        HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
-        Rect::new_unwrap(128, 64, 256, 128));
+        Rect::new_unwrap(16, 16, 128, 64));
     let mut map = MapLayer::new("assets/cotp", (16, 16), 32);
     map.tiles = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
