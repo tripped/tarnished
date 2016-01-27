@@ -174,7 +174,7 @@ fn main() {
     audio.resume();
 
     // Draw some stuff
-    let (mut x, mut y) = (0, 0);
+    let (mut off_x, mut off_y) = (0, 0);
 
     // XXX: the upscaled sprite here is now out of place; add view scaling.
     let starman = sprite("assets/starmanjr",
@@ -195,16 +195,26 @@ fn main() {
                     break 'mainloop
                 },
                 Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
-                    y -= 8;
+                    off_y -= 8;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Down), ..} => {
-                    y += 8;
+                    off_y += 8;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Left), ..} => {
-                    x -= 8;
+                    off_x -= 8;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
-                    x += 8;
+                    off_x += 8;
+                },
+                Event::MouseButtonDown {x: x, y: y, ..} => {
+                    // XXX: We have to explicitly transform by viewport here,
+                    // eventually UI should be part of the scene (?)
+                    let x = (x / 2 - off_x) as u32;
+                    let y = (y / 2 - off_y) as u32;
+
+                    // XXX: figure out this signed/unsigned and error condition
+                    map.get_px((x, y)).map(
+                        |tile| map.set_px((x, y), tile + 1));
                 },
                 _ => { }
             }
@@ -217,7 +227,7 @@ fn main() {
         let rendered_map = map.render();
 
         let mut scene = Scene::new();
-        scene.set_viewport((x, y));
+        scene.set_viewport((off_x, off_y));
         scene.add(&starman, 0);
 
         // XXX: doesn't make much sense to specify separate z-index for
