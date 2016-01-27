@@ -110,6 +110,32 @@ impl MapLayer {
         }
         result
     }
+
+    /// Get the tile value at a specified point (in pixels)
+    fn get_px(&self, (x, y): (u32, u32)) -> Option<u32> {
+        let x = x / self.tile_w;
+        let y = y / self.tile_h;
+        let i = (y * self.width + x) as usize;
+        println!("Get from map at {}, {} => idx {}", x, y, i);
+        if x >= self.width || i >= self.tiles.len() {
+            None
+        } else {
+            Some(self.tiles[i])
+        }
+    }
+
+    /// Set the tile value at a specified point (in pixels)
+    fn set_px(&mut self, (x, y): (u32, u32), tile: u32) -> Result<(), ()> {
+        let x = x / self.tile_w;
+        let y = y / self.tile_h;
+        let i = (y * self.width + x) as usize;
+        if x >= self.width || i >= self.tiles.len() {
+            Err(())
+        } else {
+            self.tiles[i] = tile;
+            Ok(())
+        }
+    }
 }
 
 fn main() {
