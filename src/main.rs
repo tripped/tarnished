@@ -181,8 +181,8 @@ fn main() {
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
         Rect::new_unwrap(16, 16, 128, 64));
-    let mut map = MapLayer::new("assets/cotp", (16, 16), 64);
-    map.tiles = vec![0;64*64];
+    let mut map = MapLayer::new("assets/cotp", (16, 16), 25);
+    map.tiles = vec![0;25*16];
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
