@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use self::sdl2::rect::Rect;
-use self::sdl2::render::Texture;
+use self::sdl2::render::{Texture, TextureQuery};
 use self::sdl2_image::LoadTexture;
 
 /// Specifies a draw rect's horizontal position and alignment
@@ -79,6 +79,17 @@ impl Renderer {
             self.textures.insert(asset.into(),
                 load_texture(asset, &self.renderer));
         }
+    }
+
+    /// Query information about a texture by its asset name.
+    ///
+    /// XXX: having all these functions be &mut self is a pain, but it's
+    /// required because of the interface of sdl2::render. Possibly look into
+    /// using Cell to achieve internal mutability and clean up this interface?
+    pub fn query(&mut self, asset: &str) -> TextureQuery {
+        self.ensure_texture(asset);
+        let tex = self.textures.get(&asset.to_string()).unwrap();
+        tex.query()
     }
 
     pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
