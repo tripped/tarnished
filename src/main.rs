@@ -152,9 +152,8 @@ fn main() {
         .build()
         .unwrap();
 
-    renderer.set_scale(2.0, 2.0);
-
     let mut renderer = scene::Renderer::new(renderer);
+    renderer.set_global_scale(2.0, 2.0);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();

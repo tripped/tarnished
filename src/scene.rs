@@ -34,6 +34,7 @@ pub struct Renderer {
     renderer: RefCell<sdl2::render::Renderer<'static>>,
     textures: RefCell<HashMap<String, Texture>>,
     offset: (i32, i32),
+    scale: (f32, f32),
 }
 
 fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
@@ -52,11 +53,22 @@ impl Renderer {
             renderer: RefCell::new(renderer),
             textures: RefCell::new(HashMap::new()),
             offset: (0, 0),
+            scale: (1.0, 1.0),
         }
     }
 
     pub fn set_viewport(&mut self, offset: (i32, i32)) {
         self.offset = offset;
+    }
+
+    /// Set the scaling factors used by default for copying textures.
+    pub fn set_copy_scale(&mut self, xs: f32, ys: f32) {
+        self.scale = (xs, ys);
+    }
+
+    /// Set the scaling factors applied to everything.
+    pub fn set_global_scale(&mut self, xscale: f32, yscale: f32) {
+        self.renderer.borrow_mut().set_scale(xscale, yscale);
     }
 
     pub fn clear(&self) {
