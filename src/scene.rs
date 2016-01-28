@@ -102,12 +102,23 @@ impl Renderer {
         tex.query()
     }
 
-    pub fn draw(&self, asset: &str, hpos: HPos, vpos: VPos) {
+    /// Copy texture, scaled by the default copy scale
+    fn copy(&self, asset: &str, src: Option<Rect>, dst: Rect) {
         self.ensure_texture(asset);
         let cache = self.textures.borrow();
         let tex = cache.get(&asset.to_string()).unwrap();
 
-        let query = tex.query();
+        let (sx, sy) = self.scale;
+        let x = (dst.x() as f32 * sx) as i32;
+        let y = (dst.y() as f32 * sy) as i32;
+        let w = (dst.width() as f32 * sx) as u32;
+        let h = (dst.height() as f32 * sy) as u32;
+        let dst = Rect::new_unwrap(x, y, w, h);
+        self.renderer.borrow_mut().copy(tex, src, Some(dst));
+    }
+
+    pub fn draw(&self, asset: &str, hpos: HPos, vpos: VPos) {
+        let query = self.query(asset);
         let width = query.width as i32;
         let height = query.height as i32;
 
@@ -129,7 +140,7 @@ impl Renderer {
         let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
         let dst = dst.offset(offx, offy).unwrap();
 
-        self.renderer.borrow_mut().copy(&tex, None, Some(dst));
+        self.copy(asset, None, dst);
     }
 
     /// Draw the nth tile of specified size from a given image asset, at a
@@ -144,7 +155,8 @@ impl Renderer {
         let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
         let (offx, offy) = self.offset;
         let dst = Rect::new_unwrap(x, y, w, h).offset(offx, offy).unwrap();
-        self.renderer.borrow_mut().copy(&tex, Some(src), Some(dst));
+
+        self.copy(tileset, Some(src), dst);
     }
 }
 
