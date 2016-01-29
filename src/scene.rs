@@ -148,10 +148,6 @@ impl Renderer {
     /// XXX: Assumes that tiles are laid out in a single horizontal strip.
     pub fn draw_tile(&self, tileset: &str, n: u32, w: u32, h: u32,
                      x: i32, y: i32) {
-        self.ensure_texture(tileset);
-        let cache = self.textures.borrow();
-        let tex = cache.get(&tileset.to_string()).unwrap();
-
         let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
         let (offx, offy) = self.offset;
         let dst = Rect::new_unwrap(x, y, w, h).offset(offx, offy).unwrap();
