@@ -31,7 +31,7 @@ pub enum VPos {
 
 /// Renderer: 1. n. A person or thing that renders.
 pub struct Renderer {
-    renderer: RefCell<sdl2::render::Renderer<'static>>,
+    renderer: sdl2::render::Renderer<'static>,
     textures: RefCell<HashMap<String, Texture>>,
     offset: (i32, i32),
     scale: (f32, f32),
@@ -50,7 +50,7 @@ fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
 impl Renderer {
     pub fn new(renderer: sdl2::render::Renderer<'static>) -> Renderer {
         Renderer {
-            renderer: RefCell::new(renderer),
+            renderer: renderer,
             textures: RefCell::new(HashMap::new()),
             offset: (0, 0),
             scale: (1.0, 1.0),
@@ -68,15 +68,15 @@ impl Renderer {
 
     /// Set the scaling factors applied to everything.
     pub fn set_global_scale(&mut self, xscale: f32, yscale: f32) {
-        self.renderer.borrow_mut().set_scale(xscale, yscale);
+        self.renderer.set_scale(xscale, yscale);
     }
 
-    pub fn clear(&self) {
-        self.renderer.borrow_mut().clear();
+    pub fn clear(&mut self) {
+        self.renderer.clear();
     }
 
-    pub fn present(&self) {
-        self.renderer.borrow_mut().present();
+    pub fn present(&mut self) {
+        self.renderer.present();
     }
 
     /// Load a texture if it does not already exist in cache
@@ -90,7 +90,7 @@ impl Renderer {
     fn ensure_texture(&self, asset: &str) {
         if !self.textures.borrow().contains_key(asset) {
             self.textures.borrow_mut().insert(asset.into(),
-                load_texture(asset, &self.renderer.borrow_mut()));
+                load_texture(asset, &self.renderer));
         }
     }
 
@@ -103,7 +103,7 @@ impl Renderer {
     }
 
     /// Copy texture, scaled by the default copy scale
-    fn copy(&self, asset: &str, src: Option<Rect>, dst: Rect) {
+    fn copy(&mut self, asset: &str, src: Option<Rect>, dst: Rect) {
         self.ensure_texture(asset);
         let cache = self.textures.borrow();
         let tex = cache.get(&asset.to_string()).unwrap();
@@ -114,10 +114,10 @@ impl Renderer {
         let w = (dst.width() as f32 * sx) as u32;
         let h = (dst.height() as f32 * sy) as u32;
         let dst = Rect::new_unwrap(x, y, w, h);
-        self.renderer.borrow_mut().copy(tex, src, Some(dst));
+        self.renderer.copy(tex, src, Some(dst));
     }
 
-    pub fn draw(&self, asset: &str, hpos: HPos, vpos: VPos) {
+    pub fn draw(&mut self, asset: &str, hpos: HPos, vpos: VPos) {
         let query = self.query(asset);
         let width = query.width as i32;
         let height = query.height as i32;
@@ -146,7 +146,7 @@ impl Renderer {
     /// Draw the nth tile of specified size from a given image asset, at a
     /// specific position, assuming top-left alignment.
     /// XXX: Assumes that tiles are laid out in a single horizontal strip.
-    pub fn draw_tile(&self, tileset: &str, n: u32, w: u32, h: u32,
+    pub fn draw_tile(&mut self, tileset: &str, n: u32, w: u32, h: u32,
                      x: i32, y: i32) {
         let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
         let (offx, offy) = self.offset;
