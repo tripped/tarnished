@@ -1,4 +1,5 @@
 extern crate sdl2;
+extern crate sdl2_ttf;
 extern crate snes_spc;
 extern crate time;
 extern crate rustc_serialize;
@@ -141,6 +142,7 @@ impl MapLayer {
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video = sdl_context.video().unwrap();
+    let ttf = sdl2_ttf::init().unwrap();
 
     let window = video.window("Tarnished", 800, 500)
         .position_centered()
@@ -152,7 +154,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = scene::Renderer::new(renderer);
+    let mut renderer = scene::Renderer::new(renderer, ttf);
     renderer.set_global_scale(1.0, 1.0);
     renderer.set_copy_scale(2.0, 2.0);
 

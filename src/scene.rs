@@ -1,5 +1,6 @@
 extern crate sdl2;
 extern crate sdl2_image;
+extern crate sdl2_ttf;
 
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -7,6 +8,7 @@ use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::path::Path;
 
+use self::sdl2::pixels::Color;
 use self::sdl2::rect::Rect;
 use self::sdl2::render::{Texture, TextureQuery};
 use self::sdl2_image::LoadTexture;
@@ -32,6 +34,7 @@ pub enum VPos {
 /// Renderer: 1. n. A person or thing that renders.
 pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
+    ttf: sdl2_ttf::Sdl2TtfContext,
     textures: RefCell<HashMap<String, Texture>>,
     offset: (i32, i32),
     scale: (f32, f32),
@@ -48,9 +51,11 @@ fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
 }
 
 impl Renderer {
-    pub fn new(renderer: sdl2::render::Renderer<'static>) -> Renderer {
+    pub fn new(renderer: sdl2::render::Renderer<'static>,
+               ttf: sdl2_ttf::Sdl2TtfContext) -> Renderer {
         Renderer {
             renderer: renderer,
+            ttf: ttf,
             textures: RefCell::new(HashMap::new()),
             offset: (0, 0),
             scale: (1.0, 1.0),
@@ -153,6 +158,26 @@ impl Renderer {
         let dst = Rect::new_unwrap(x, y, w, h).offset(offx, offy).unwrap();
 
         self.copy(tileset, Some(src), dst);
+    }
+
+    /// Draw a string using a specified font.
+    /// XXX: will currently re-load font and render texture every tim!
+    /// XXX: not affected by copy scaling -- yet!
+    pub fn draw_text(&mut self, text: &str, font: &str, x: i32, y: i32) {
+        let path = font.to_string() + ".ttf";
+        let path = Path::new(&path);
+        let font = self.ttf.load_font(path, 14).unwrap();
+
+        // render a surface, and convert it to a texture bound to the renderer
+        let surface = font.render(text)
+            .solid(Color::RGBA(100, 0, 0, 255)).unwrap();
+        let mut texture = self.renderer
+            .create_texture_from_surface(&surface).unwrap();
+
+        let TextureQuery { width, height, .. } = texture.query();
+        let dst = Rect::new_unwrap(x, y, width, height);
+
+        self.renderer.copy(&texture, None, Some(dst));
     }
 }
 
