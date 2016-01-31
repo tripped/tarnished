@@ -16,7 +16,7 @@ use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
 mod scene;
-use scene::{Scene, Sprite, sprite, Tile, HPos, VPos};
+use scene::{Scene, Sprite, sprite, Tile, text, HPos, VPos};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -155,8 +155,8 @@ fn main() {
         .unwrap();
 
     let mut renderer = scene::Renderer::new(renderer, ttf);
-    renderer.set_global_scale(1.0, 1.0);
-    renderer.set_copy_scale(2.0, 2.0);
+    renderer.set_global_scale(2.0, 2.0);
+    //renderer.set_copy_scale(2.0, 2.0);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
@@ -183,6 +183,7 @@ fn main() {
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
         Rect::new_unwrap(16, 16, 128, 64));
+    let hello = text("Hello, world!", "assets/orangekid", 100, 100);
     let mut map = MapLayer::new("assets/cotp", (16, 16), 25);
     map.tiles = vec![0;25*16];
 
@@ -241,6 +242,8 @@ fn main() {
         for t in &rendered_map {
             scene.add(t, -1);
         }
+
+        scene.add(&hello, 2);
 
         scene.present(&mut renderer);
 

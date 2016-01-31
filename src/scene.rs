@@ -320,3 +320,32 @@ impl Visible for Tile {
                       self.x, self.y);
     }
 }
+
+/// A Visible object that displays text in a given font
+pub struct Text {
+    text: String,
+    font: String,
+    x: i32,
+    y: i32
+}
+
+impl Text {
+    pub fn new(text: &str, font: &str, x: i32, y: i32) -> Text {
+        Text {
+            text: text.into(),
+            font: font.into(),
+            x: x,
+            y: y
+        }
+    }
+}
+
+pub fn text(text: &str, font: &str, x: i32, y: i32) -> Text {
+    Text::new(text, font, x, y)
+}
+
+impl Visible for Text {
+    fn show(&self, renderer: &mut Renderer) {
+        renderer.draw_text(&self.text, &self.font, self.x, self.y);
+    }
+}
