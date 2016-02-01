@@ -15,8 +15,11 @@ use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
+mod renderer;
+use renderer::{Renderer, HPos, VPos};
+
 mod scene;
-use scene::{Scene, Sprite, sprite, Tile, text, HPos, VPos};
+use scene::{Scene, Sprite, sprite, Tile, text};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -154,7 +157,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = scene::Renderer::new(renderer, ttf);
+    let mut renderer = renderer::Renderer::new(renderer, ttf);
     renderer.set_global_scale(2.0, 2.0);
     //renderer.set_copy_scale(2.0, 2.0);
 
