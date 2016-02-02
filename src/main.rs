@@ -16,13 +16,13 @@ use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
 mod renderer;
-use renderer::{Renderer, HPos, VPos};
-
 mod scene;
-use scene::{Scene, Sprite, sprite, Tile, text};
-
 mod textbox;
+mod map;
+use scene::{Scene, Sprite, sprite, Tile, text};
+use renderer::{Renderer, HPos, VPos};
 use textbox::Textbox;
+use map::MapLayer;
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -32,66 +32,6 @@ impl AudioCallback for SpcPlayer {
     type Channel = i16;
     fn callback(&mut self, out: &mut [i16]) {
         self.emulator.play(out).unwrap();
-    }
-}
-
-/// A grid of cells, drawn from a tileset.
-#[derive(RustcEncodable, RustcDecodable)]
-struct MapLayer {
-    asset: String,
-    tile_w: u32,
-    tile_h: u32,
-    width: u32,
-    tiles: Vec<u32>,
-}
-
-impl MapLayer {
-    fn new(asset: &str, (tw, th): (u32, u32), width: u32) -> MapLayer {
-        MapLayer {
-            asset: asset.into(),
-            tile_w: tw,
-            tile_h: th,
-            width: width,
-            tiles: Vec::new(),
-        }
-    }
-
-    fn render(&self) -> Vec<Tile> {
-        let mut result = Vec::new();
-        for (i, tile) in self.tiles.iter().enumerate() {
-            let i = i as u32;
-            let x = (i % self.width) * self.tile_w;
-            let y = (i / self.width) * self.tile_h;
-            result.push(Tile::new(&self.asset, *tile,
-                self.tile_w, self.tile_h, x as i32, y as i32));
-        }
-        result
-    }
-
-    /// Get the tile value at a specified point (in pixels)
-    fn get_px(&self, (x, y): (u32, u32)) -> Option<u32> {
-        let x = x / self.tile_w;
-        let y = y / self.tile_h;
-        let i = (y * self.width + x) as usize;
-        println!("Get from map at {}, {} => idx {}", x, y, i);
-        if x >= self.width || i >= self.tiles.len() {
-            None
-        } else {
-            Some(self.tiles[i])
-        }
-    }
-
-    /// Set the tile value at a specified point (in pixels)
-    fn set_px(&mut self, (x, y): (u32, u32), tile: u32) -> Result<(), ()> {
-        let x = x / self.tile_w;
-        let y = y / self.tile_h;
-        let i = (y * self.width + x) as usize;
-        if x >= self.width || i >= self.tiles.len() {
-            Err(())
-        } else {
-            self.tiles[i] = tile;
-            Ok(())
-        }
     }
 }
 
@@ -140,8 +80,7 @@ fn main() {
     let textbox = Textbox::new("assets/box",
         Rect::new_unwrap(16, 16, 128, 64));
     let hello = text("Hello, world!", "assets/orangekid", 100, 100);
-    let mut map = MapLayer::new("assets/cotp", (16, 16), 25);
-    map.tiles = vec![0;25*16];
+    let mut map = MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]);
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
