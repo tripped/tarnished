@@ -74,7 +74,6 @@ fn main() {
     // Draw some stuff
     let (mut off_x, mut off_y) = (0, 0);
 
-    // XXX: the upscaled sprite here is now out of place; add view scaling.
     let starman = sprite("assets/starmanjr",
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
