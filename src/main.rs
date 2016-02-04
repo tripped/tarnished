@@ -5,9 +5,6 @@ extern crate time;
 extern crate rustc_serialize;
 extern crate bincode;
 
-use bincode::rustc_serialize::{encode, decode};
-use rustc_serialize::{Encodable, Decodable};
-use rustc_serialize::json;
 use std::path::Path;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -112,6 +109,8 @@ fn main() {
                     // XXX: figure out this signed/unsigned and error condition
                     map.get_px((x, y)).map(
                         |tile| map.set_px((x, y), tile + 1));
+
+                    println!("Map: {}", map.serialize());
                 },
                 _ => { }
             }

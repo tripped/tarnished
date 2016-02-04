@@ -1,3 +1,7 @@
+use bincode::rustc_serialize::{encode, decode};
+use rustc_serialize::{Encodable, Decodable};
+use rustc_serialize::json;
+
 use scene::Tile;
 
 /// A grid of cells, drawn from a tileset.
@@ -20,6 +24,10 @@ impl MapLayer {
             width: width,
             tiles: tiles,
         }
+    }
+
+    pub fn serialize(&self) -> String {
+        json::encode(self).unwrap()
     }
 
     pub fn render(&self) -> Vec<Tile> {
