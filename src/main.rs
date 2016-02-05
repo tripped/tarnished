@@ -5,7 +5,9 @@ extern crate time;
 extern crate rustc_serialize;
 extern crate bincode;
 
+use std::fs::File;
 use std::path::Path;
+
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
@@ -76,7 +78,9 @@ fn main() {
     let textbox = Textbox::new("assets/box",
         Rect::new_unwrap(16, 16, 128, 64));
     let hello = text("Hello, world!", "assets/orangekid", 100, 100);
-    let mut map = MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]);
+
+    let mut map = MapLayer::from_file("assets/map.json")
+        .unwrap_or(MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]));
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
@@ -109,8 +113,6 @@ fn main() {
                     // XXX: figure out this signed/unsigned and error condition
                     map.get_px((x, y)).map(
                         |tile| map.set_px((x, y), tile + 1));
-
-                    println!("Map: {}", map.serialize());
                 },
                 _ => { }
             }
@@ -147,4 +149,6 @@ fn main() {
     let fps = (frames as f64 / ((end - start) as f64 / 1e9)) as u32;
     println!("Rendered {} frames in {} ns; effective: {} fps",
              frames, end - start, fps);
+
+    map.save("assets/map.json").unwrap();
 }

@@ -1,3 +1,9 @@
+use std::fs::File;
+use std::io;
+use std::io::{Read, Write};
+use std::path::Path;
+
+// XXX: switch to serde
 use bincode::rustc_serialize::{encode, decode};
 use rustc_serialize::{Encodable, Decodable};
 use rustc_serialize::json;
@@ -24,6 +30,20 @@ impl MapLayer {
             width: width,
             tiles: tiles,
         }
+    }
+
+    pub fn from_file<P: AsRef<Path>>(path: P) -> io::Result<MapLayer> {
+        let mut f = try!(File::open(path));
+        let mut s = String::new();
+        try!(f.read_to_string(&mut s));
+        // XXX: really should compose error instead of unwrapping
+        Ok(json::decode(&s).unwrap())
+    }
+
+    pub fn save<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
+        let mut f = try!(File::create(path));
+        try!(f.write_all(self.serialize().as_bytes()));
+        Ok(())
     }
 
     pub fn serialize(&self) -> String {
