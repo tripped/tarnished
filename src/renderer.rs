@@ -170,7 +170,7 @@ impl Renderer {
         // render a surface, and convert it to a texture bound to the renderer
         let surface = font.render(text)
             .solid(Color::RGBA(100, 0, 0, 255)).unwrap();
-        let mut texture = self.renderer
+        let texture = self.renderer
             .create_texture_from_surface(&surface).unwrap();
 
         let TextureQuery { width, height, .. } = texture.query();

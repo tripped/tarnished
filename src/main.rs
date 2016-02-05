@@ -5,9 +5,6 @@ extern crate time;
 extern crate rustc_serialize;
 extern crate bincode;
 
-use std::fs::File;
-use std::path::Path;
-
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
@@ -18,7 +15,7 @@ mod renderer;
 mod scene;
 mod textbox;
 mod map;
-use scene::{Scene, Sprite, sprite, Tile, text};
+use scene::{Scene, sprite, text};
 use renderer::{Renderer, HPos, VPos};
 use textbox::Textbox;
 use map::MapLayer;
@@ -44,7 +41,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer()
+    let renderer = window.renderer()
         .accelerated()
         .build()
         .unwrap();
@@ -104,7 +101,7 @@ fn main() {
                 Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
                     off_x += 8;
                 },
-                Event::MouseButtonDown {x: x, y: y, ..} => {
+                Event::MouseButtonDown {x, y, ..} => {
                     // XXX: We have to explicitly transform by viewport here,
                     // eventually UI should be part of the scene (?)
                     let x = (x / 2 - off_x) as u32;

@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use sdl2::rect::Rect;
-use scene::{Visible, Sprite, sprite};
+use scene::{Sprite, sprite};
 use renderer::{HPos, VPos};
 
 pub struct Textbox {
