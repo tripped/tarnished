@@ -101,15 +101,28 @@ fn main() {
                 Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
                     off_x += 8;
                 },
-                Event::MouseButtonDown {x, y, ..} => {
+                Event::MouseWheel {y: scroll_y, ..} => {
+                    let (_, x, y) = sdl_context.mouse().mouse_state();
+
                     // XXX: We have to explicitly transform by viewport here,
                     // eventually UI should be part of the scene (?)
                     let x = (x / 2 - off_x) as u32;
                     let y = (y / 2 - off_y) as u32;
 
                     // XXX: figure out this signed/unsigned and error condition
-                    map.get_px((x, y)).map(
-                        |tile| map.set_px((x, y), tile + 1));
+                    match map.get_px((x, y)) {
+                        Some(tile) => {
+                            map.set_px((x, y), 
+                                if scroll_y < 0 && tile > 0 {
+                                    tile - 1
+                                } else if scroll_y > 0 {
+                                    tile + 1
+                                } else {
+                                    0
+                                }).ok();
+                        },
+                        _ => {}
+                    }
                 },
                 _ => { }
             }
