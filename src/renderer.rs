@@ -163,16 +163,27 @@ impl Renderer {
     /// XXX: will currently re-load font and render texture every tim!
     /// XXX: not affected by copy scaling -- yet!
     pub fn draw_text(&mut self, text: &str, font: &str, x: i32, y: i32) {
-        let path = font.to_string() + ".ttf";
-        let path = Path::new(&path);
-        let font = self.ttf.load_font(path, 14).unwrap();
+        // Check the texture cache for this string
+        let id = format!(":STR:{}:{}", font, text);
 
-        // render a surface, and convert it to a texture bound to the renderer
-        let surface = font.render(text)
-            .solid(Color::RGBA(100, 0, 0, 255)).unwrap();
-        let texture = self.renderer
-            .create_texture_from_surface(&surface).unwrap();
+        if !self.textures.borrow().contains_key(&id) {
+            let path = font.to_string() + ".ttf";
+            let path = Path::new(&path);
+            let font = self.ttf.load_font(path, 14).unwrap();
 
+            // render a surface, and convert it to a texture
+            let surface = font.render(text)
+                .solid(Color::RGBA(100, 0, 0, 255)).unwrap();
+            let texture = self.renderer
+                .create_texture_from_surface(&surface).unwrap();
+
+            self.textures.borrow_mut().insert(id.clone(), texture);
+        }
+
+        // XXX: this borrowing is fairly ugly -- should redesign
+        // renderer into multiple parts to separate texture cache
+        let cache = self.textures.borrow();
+        let texture = cache.get(&id).unwrap();
         let TextureQuery { width, height, .. } = texture.query();
         let dst = Rect::new_unwrap(x, y, width, height);
 
