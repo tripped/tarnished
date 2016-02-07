@@ -112,7 +112,7 @@ fn main() {
                     // XXX: figure out this signed/unsigned and error condition
                     match map.get_px((x, y)) {
                         Some(tile) => {
-                            map.set_px((x, y), 
+                            map.set_px((x, y),
                                 if scroll_y < 0 && tile > 0 {
                                     tile - 1
                                 } else if scroll_y > 0 {
