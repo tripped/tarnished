@@ -1,14 +1,14 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-use renderer::{Renderer, HPos, VPos};
+use renderer::{Renderer, RenderContext, HPos, VPos};
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
 /// to z-ordering, i.e., it is always entirely behind or entirely in front of
 /// other visible objects. Rendering a frame or scene is a process of creating
 /// many Visibles, sorting them by layer and z-index, and showing them.
 pub trait Visible {
-    fn show(&self, renderer: &mut Renderer);
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext);
 }
 
 /// A scene Instruction is a Visible and a z-index at which it is to be shown.
@@ -65,13 +65,14 @@ impl<'a> Scene<'a> {
 
     /// Presents the scene onto the specified renderer.
     /// Consumes the scene's contents in the process.
-    pub fn present(&mut self, renderer: &mut Renderer) {
+    pub fn present(&mut self, renderer: &mut Renderer,
+                   context: &mut RenderContext) {
         renderer.clear();
         renderer.set_viewport(self.offset);
 
         loop {
             match self.elements.pop() {
-                Some(element) => element.object.show(renderer),
+                Some(element) => element.object.show(renderer, context),
                 None => break
             }
         }
@@ -103,8 +104,8 @@ pub fn sprite(name: &str, h: HPos, v: VPos) -> Sprite {
 }
 
 impl Visible for Sprite {
-    fn show(&self, renderer: &mut Renderer) {
-        renderer.draw(&self.name, self.hpos, self.vpos);
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+        renderer.draw(context, &self.name, self.hpos, self.vpos);
     }
 }
 
@@ -137,9 +138,9 @@ pub fn tile(tileset: &str, n: u32, w: u32, h: u32, x: i32, y: i32) -> Tile {
 }
 
 impl Visible for Tile {
-    fn show(&self, renderer: &mut Renderer) {
-        renderer.draw_tile(&self.tileset, self.tile, self.width, self.height,
-                      self.x, self.y);
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+        renderer.draw_tile(context, &self.tileset, self.tile,
+                           self.width, self.height, self.x, self.y);
     }
 }
 
@@ -167,7 +168,7 @@ pub fn text(text: &str, font: &str, x: i32, y: i32) -> Text {
 }
 
 impl Visible for Text {
-    fn show(&self, renderer: &mut Renderer) {
-        renderer.draw_text(&self.text, &self.font, self.x, self.y);
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+        renderer.draw_text(context, &self.text, &self.font, self.x, self.y);
     }
 }

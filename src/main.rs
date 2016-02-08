@@ -16,7 +16,7 @@ mod scene;
 mod textbox;
 mod map;
 use scene::{Scene, sprite, text};
-use renderer::{Renderer, HPos, VPos};
+use renderer::{Renderer, RenderContext, HPos, VPos};
 use textbox::Textbox;
 use map::MapLayer;
 
@@ -46,7 +46,8 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = renderer::Renderer::new(renderer, ttf);
+    let mut render_context = RenderContext::new();
+    let mut renderer = Renderer::new(renderer, ttf);
     renderer.set_global_scale(2.0, 2.0);
     //renderer.set_copy_scale(2.0, 2.0);
 
@@ -150,7 +151,7 @@ fn main() {
 
         scene.add(&hello, 2);
 
-        scene.present(&mut renderer);
+        scene.present(&mut renderer, &mut render_context);
 
         frames += 1;
     }
