@@ -53,13 +53,6 @@ impl RenderContext {
     }
 
     /// Load a texture if it does not already exist in cache
-    ///
-    /// XXX: ideally, this function would return a reference to the texture.
-    /// However, returning a reference would extend the lifetime of the borrow
-    /// on `self` which implicitly borrows `self.renderer`. So, we'd be unable
-    /// to draw the texture we just requested. Currently the only way to fix
-    /// this would be to redesign this system so that renderer and the texture
-    /// cache aren't in the same struct.
     fn ensure_texture(&mut self, asset: &str,
                       renderer: &sdl2::render::Renderer) {
         if !self.textures.contains_key(asset) {
@@ -77,16 +70,17 @@ impl RenderContext {
     }
 
     /// Return a texture if it exists in cache, otherwise None.
-    pub fn get_texture(&self, asset: &str) -> Option<&Texture> {
+    pub fn get_texture(&mut self, asset: &str,
+                       renderer: &sdl2::render::Renderer) -> Option<&Texture> {
+        self.ensure_texture(asset, renderer);
         self.textures.get(asset)
     }
 
     /// Query information about a texture by its asset name.
     pub fn query(&mut self, asset: &str,
                  renderer: &sdl2::render::Renderer) -> TextureQuery {
-        self.ensure_texture(asset, renderer);
         // XXX: we expect this unwrap to be safe, but really we shouldn't
-        let tex = self.get_texture(asset).unwrap();
+        let tex = self.get_texture(asset, renderer).unwrap();
         tex.query()
     }
 }
@@ -135,8 +129,7 @@ impl Renderer {
     /// Copy texture, scaled by the default copy scale
     fn copy(&mut self, context: &mut RenderContext,
             asset: &str, src: Option<Rect>, dst: Rect) {
-        context.ensure_texture(asset, &self.renderer);
-        let tex = context.get_texture(asset).unwrap();
+        let tex = context.get_texture(asset, &self.renderer).unwrap();
 
         let (sx, sy) = self.scale;
         let x = (dst.x() as f32 * sx) as i32;
@@ -211,7 +204,7 @@ impl Renderer {
 
         // XXX: this borrowing is fairly ugly -- should redesign
         // renderer into multiple parts to separate texture cache
-        let texture = context.get_texture(&id).unwrap();
+        let texture = context.get_texture(&id, &self.renderer).unwrap();
         let TextureQuery { width, height, .. } = texture.query();
         let dst = Rect::new_unwrap(x, y, width, height);
 
