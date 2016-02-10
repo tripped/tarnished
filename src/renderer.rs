@@ -202,10 +202,6 @@ impl Renderer {
             context.add_texture(&id, texture);
         }
 
-        let texture = context.get_texture(&id, &self.renderer).unwrap();
-        let TextureQuery { width, height, .. } = texture.query();
-        let dst = Rect::new_unwrap(x, y, width, height);
-
-        self.renderer.copy(&texture, None, Some(dst));
+        self.draw(context, &id, HPos::Center(x), VPos::Center(y));
     }
 }
