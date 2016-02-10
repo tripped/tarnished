@@ -202,8 +202,6 @@ impl Renderer {
             context.add_texture(&id, texture);
         }
 
-        // XXX: this borrowing is fairly ugly -- should redesign
-        // renderer into multiple parts to separate texture cache
         let texture = context.get_texture(&id, &self.renderer).unwrap();
         let TextureQuery { width, height, .. } = texture.query();
         let dst = Rect::new_unwrap(x, y, width, height);
