@@ -63,6 +63,13 @@ impl<'a> Scene<'a> {
         });
     }
 
+    /// Add multiple objects with the same z-index
+    pub fn add_all<P: Visible>(&mut self, elements: &'a Vec<P>, z_index: i32) {
+        for obj in elements {
+            self.add(obj, z_index);
+        }
+    }
+
     /// Presents the scene onto the specified renderer.
     /// Consumes the scene's contents in the process.
     pub fn present(&mut self, renderer: &mut Renderer,

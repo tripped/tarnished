@@ -139,15 +139,8 @@ fn main() {
         scene.set_viewport((off_x, off_y));
         scene.add(&starman, 0);
 
-        // XXX: doesn't make much sense to specify separate z-index for
-        // every piece of this textbox when rendering piecewise to scene
-        for p in &rendered_box {
-            scene.add(p, 1);
-        }
-
-        for t in &rendered_map {
-            scene.add(t, -1);
-        }
+        scene.add_all(&rendered_box, 1);
+        scene.add_all(&rendered_map, -1);
 
         scene.add(&hello, 2);
 
