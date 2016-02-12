@@ -15,7 +15,7 @@ mod renderer;
 mod scene;
 mod textbox;
 mod map;
-use scene::{Scene, sprite, text};
+use scene::{Scene, Tile, sprite, text};
 use renderer::{Renderer, RenderContext, HPos, VPos};
 use textbox::Textbox;
 use map::MapLayer;
@@ -28,6 +28,84 @@ impl AudioCallback for SpcPlayer {
     type Channel = i16;
     fn callback(&mut self, out: &mut [i16]) {
         self.emulator.play(out).unwrap();
+    }
+}
+
+enum Direction {
+    Down,
+    Left,
+    Up,
+    Right,
+}
+
+enum State {
+    Walking,
+    Resting,
+}
+
+struct Brobot {
+    asset: String,
+    x: i32,
+    y: i32,
+    state: State,
+    direction: Direction,
+    time: u32,
+    step: u32,
+}
+
+impl Brobot {
+    fn new(asset: &str) -> Brobot {
+        Brobot {
+            asset: asset.into(),
+            x: 0, y: 0,
+            state: State::Resting,
+            direction: Direction::Down,
+            time: 0,
+            step: 15,
+        }
+    }
+
+    fn tick(&mut self) {
+        self.time += 1;
+
+        match self.state {
+            State::Walking => match self.direction {
+                Direction::Left => {
+                    self.x -= 1;
+                },
+                Direction::Right => {
+                    self.x += 1;
+                },
+                Direction::Up => {
+                    self.y -= 1;
+                },
+                Direction::Down => {
+                    self.y += 1;
+                }
+            },
+            _ => {}
+        }
+    }
+
+    fn render(&self,) -> Tile {
+        let mut frame = match self.direction {
+            Direction::Down => 0,
+            Direction::Left => 1,
+            Direction::Up => 2,
+            Direction::Right => 3
+        };
+
+        // If walking, use the step-up frame every so often
+        match self.state {
+            State::Walking => if (self.time / self.step) % 2 == 0 {
+                // XXX: hardcoded frame offsets = gross
+                frame += 4;
+            },
+            _ => {}
+        }
+
+        // XXX: also gross: hardcoded width/height
+        Tile::new(&self.asset, frame, 16, 24, self.x, self.y)
     }
 }
 
