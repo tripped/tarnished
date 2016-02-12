@@ -51,6 +51,10 @@ struct Brobot {
     direction: Direction,
     time: u32,
     step: u32,
+    // XXX: really need a better way to represent movement speed at these
+    // small discrete pixel scales. It's probably okay to just use floats
+    // internally and alias.
+    freq: u32,
 }
 
 impl Brobot {
@@ -61,12 +65,17 @@ impl Brobot {
             state: State::Resting,
             direction: Direction::Down,
             time: 0,
-            step: 15,
+            step: 30,
+            freq: 2
         }
     }
 
     fn tick(&mut self) {
         self.time += 1;
+
+        if self.time % self.freq != 0 {
+            return;
+        }
 
         match self.state {
             State::Walking => match self.direction {
@@ -96,6 +105,7 @@ impl Brobot {
         };
 
         // If walking, use the step-up frame every so often
+        // XXX: should probably be part of tick(), or take freq into account
         match self.state {
             State::Walking => if (self.time / self.step) % 2 == 0 {
                 // XXX: hardcoded frame offsets = gross
