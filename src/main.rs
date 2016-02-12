@@ -163,7 +163,7 @@ fn main() {
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
         Rect::new_unwrap(16, 16, 128, 64));
-    let hello = text("Hello, world!", "assets/orangekid", 100, 100);
+    let hello = text("Hello, world!", "assets/orangekid", 75, 50);
 
     let mut map = MapLayer::from_file("assets/map.json")
         .unwrap_or(MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]));
@@ -172,6 +172,8 @@ fn main() {
     let start = time::precise_time_ns();
 
     let mut hero = Brobot::new("assets/hero");
+    hero.x = 85;
+    hero.y = 100;
     let mut stupid_ticker = 0;
 
     'mainloop: loop {
@@ -246,7 +248,9 @@ fn main() {
         let rendered_hero = hero.render();
 
         let mut scene = Scene::new();
-        scene.set_viewport((off_x, off_y));
+
+        // For now, base scene offset on hero's position
+        scene.set_viewport((-hero.x + 80, -hero.y + 60));
         scene.add(&starman, 0);
 
         scene.add_all(&rendered_box, 1);
