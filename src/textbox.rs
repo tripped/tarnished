@@ -50,6 +50,7 @@ impl Textbox {
             sprite(&self.part("bl"), HPos::Right(x),      VPos::Top(b)),
             sprite(&self.part("b"),  HPos::Stretch(x, w), VPos::Top(b)),
             sprite(&self.part("br"), HPos::Left(r),       VPos::Top(b)),
+            sprite(&self.part("m"),  HPos::Stretch(x, w), VPos::Stretch(y, h)),
         ]
     }
 }
