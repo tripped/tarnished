@@ -194,8 +194,9 @@ impl Renderer {
             let font = self.ttf.load_font(path, 14).unwrap();
 
             // render a surface, and convert it to a texture
+            // XXX: configurable text color
             let surface = font.render(text)
-                .solid(Color::RGBA(100, 0, 0, 255)).unwrap();
+                .solid(Color::RGBA(224, 224, 224, 255)).unwrap();
             let texture = self.renderer
                 .create_texture_from_surface(&surface).unwrap();
 
