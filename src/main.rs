@@ -161,6 +161,9 @@ fn main() {
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
+    let mut hero = Brobot::new("assets/hero");
+    let mut stupid_ticker = 0;
+
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
@@ -169,16 +172,23 @@ fn main() {
                     break 'mainloop
                 },
                 Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
-                    off_y -= 8;
+                    hero.direction = Direction::Up;
+                    hero.state = State::Walking;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Down), ..} => {
-                    off_y += 8;
+                    hero.direction = Direction::Down;
+                    hero.state = State::Walking;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Left), ..} => {
-                    off_x -= 8;
+                    hero.direction = Direction::Left;
+                    hero.state = State::Walking;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
-                    off_x += 8;
+                    hero.direction = Direction::Right;
+                    hero.state = State::Walking;
+                },
+                Event::KeyUp {..} => {
+                    hero.state = State::Resting;
                 },
                 Event::MouseWheel {y: scroll_y, ..} => {
                     let (_, x, y) = sdl_context.mouse().mouse_state();
@@ -207,11 +217,23 @@ fn main() {
             }
         }
 
+        // XXX: this is the jankiest possible way to control timestep.
+        // Should probably write a proper game loop next.
+        let elapsed = time::precise_time_ns() - start;
+        let dt = elapsed - stupid_ticker;
+        if stupid_ticker > 16666666 {
+            stupid_ticker = 0;
+            hero.tick();
+        } else {
+            stupid_ticker += dt;
+        }
+
         // XXX: note that box must be rendered before creating scene, since
         // scene borrows references to all the instructions added to it. This
         // is perhaps an API weakness; might end up just boxing visibles.
         let rendered_box = textbox.render();
         let rendered_map = map.render();
+        let rendered_hero = hero.render();
 
         let mut scene = Scene::new();
         scene.set_viewport((off_x, off_y));
@@ -221,6 +243,8 @@ fn main() {
         scene.add_all(&rendered_map, -1);
 
         scene.add(&hello, 2);
+
+        scene.add(&rendered_hero, 0);
 
         scene.present(&mut renderer, &mut render_context);
 
