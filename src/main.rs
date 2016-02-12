@@ -207,8 +207,8 @@ fn main() {
 
                     // XXX: We have to explicitly transform by viewport here,
                     // eventually UI should be part of the scene (?)
-                    let x = (x / 2 - off_x) as u32;
-                    let y = (y / 2 - off_y) as u32;
+                    let x = (x / 4 - off_x) as u32;
+                    let y = (y / 4 - off_y) as u32;
 
                     // XXX: figure out this signed/unsigned and error condition
                     match map.get_px((x, y)) {
@@ -236,6 +236,10 @@ fn main() {
         if stupid_ticker > 16666666 {
             stupid_ticker = 0;
             hero.tick();
+
+            // For now, base scene offset on hero's position
+            off_x = -hero.x + 80;
+            off_y = -hero.y + 60;
         } else {
             stupid_ticker += dt;
         }
@@ -249,8 +253,7 @@ fn main() {
 
         let mut scene = Scene::new();
 
-        // For now, base scene offset on hero's position
-        scene.set_viewport((-hero.x + 80, -hero.y + 60));
+        scene.set_viewport((off_x, off_y));
         scene.add(&starman, 0);
 
         scene.add_all(&rendered_box, 1);
