@@ -150,7 +150,7 @@ fn main() {
     let audio = audio_subsystem.open_playback(None, desired_spec, |spec| {
         println!("Audio initialized: {:?}", spec);
         SpcPlayer {
-            emulator: SnesSpc::from_file("assets/otherworldly.spc").unwrap()
+            emulator: SnesSpc::from_file("assets/cotp.spc").unwrap()
         }
     }).unwrap();
 
