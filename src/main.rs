@@ -45,6 +45,8 @@ enum State {
 
 struct Brobot {
     asset: String,
+    w: u32,
+    h: u32,
     x: i32,
     y: i32,
     state: State,
@@ -58,9 +60,10 @@ struct Brobot {
 }
 
 impl Brobot {
-    fn new(asset: &str) -> Brobot {
+    fn new(asset: &str, w: u32, h: u32) -> Brobot {
         Brobot {
             asset: asset.into(),
+            w: w, h: h,
             x: 0, y: 0,
             state: State::Resting,
             direction: Direction::Down,
@@ -114,8 +117,7 @@ impl Brobot {
             _ => {}
         }
 
-        // XXX: also gross: hardcoded width/height
-        Tile::new(&self.asset, frame, 16, 24, self.x, self.y)
+        Tile::new(&self.asset, frame, self.w, self.h, self.x, self.y)
     }
 }
 
@@ -171,7 +173,7 @@ fn main() {
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
-    let mut hero = Brobot::new("assets/hero");
+    let mut hero = Brobot::new("assets/hero", 16, 24);
     hero.x = 85;
     hero.y = 100;
     let mut stupid_ticker = 0;
