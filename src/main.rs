@@ -128,6 +128,7 @@ fn main() {
 
     let window = video.window("Tarnished", 800, 500)
         .position_centered()
+        .resizable()
         .build()
         .unwrap();
 
