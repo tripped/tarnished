@@ -186,6 +186,14 @@ fn main() {
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                     break 'mainloop
                 },
+                Event::KeyDown {keycode: Some(Keycode::RightBracket), ..} => {
+                    let (xs, ys) = renderer.global_scale();
+                    renderer.set_global_scale(xs+0.2, ys+0.2);
+                },
+                Event::KeyDown {keycode: Some(Keycode::LeftBracket), ..} => {
+                    let (xs, ys) = renderer.global_scale();
+                    renderer.set_global_scale(xs-0.2, ys-0.2);
+                },
                 Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
                     hero.direction = Direction::Up;
                     hero.state = State::Walking;
