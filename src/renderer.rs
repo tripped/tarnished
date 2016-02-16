@@ -108,9 +108,19 @@ impl Renderer {
         self.offset = offset;
     }
 
+    /// Get the scaling factors used by default for copying textures.
+    pub fn copy_scale(&self) -> (f32, f32) {
+        self.scale
+    }
+
     /// Set the scaling factors used by default for copying textures.
     pub fn set_copy_scale(&mut self, xs: f32, ys: f32) {
         self.scale = (xs, ys);
+    }
+
+    /// Get the scaling factors applied to everything.
+    pub fn global_scale(&self) -> (f32, f32) {
+        self.renderer.scale()
     }
 
     /// Set the scaling factors applied to everything.
