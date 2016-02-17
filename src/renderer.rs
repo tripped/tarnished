@@ -141,9 +141,10 @@ impl Renderer {
             asset: &str, src: Option<Rect>, dst: Rect) {
         let tex = context.get_texture(asset, &self.renderer).unwrap();
 
+        let (dx, dy) = self.offset;
         let (sx, sy) = self.scale;
-        let x = (dst.x() as f32 * sx) as i32;
-        let y = (dst.y() as f32 * sy) as i32;
+        let x = ((dst.x() + dx) as f32 * sx) as i32;
+        let y = ((dst.y() + dy) as f32 * sy) as i32;
         let w = (dst.width() as f32 * sx) as u32;
         let h = (dst.height() as f32 * sy) as u32;
         let dst = Rect::new_unwrap(x, y, w, h);
@@ -171,10 +172,7 @@ impl Renderer {
             VPos::Stretch(y, h) => (y, y+h as i32),
         };
 
-        let (offx, offy) = self.offset;
         let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
-        let dst = dst.offset(offx, offy).unwrap();
-
         self.copy(context, asset, None, dst);
     }
 
@@ -185,9 +183,7 @@ impl Renderer {
                      tileset: &str, n: u32, w: u32, h: u32,
                      x: i32, y: i32) {
         let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
-        let (offx, offy) = self.offset;
-        let dst = Rect::new_unwrap(x, y, w, h).offset(offx, offy).unwrap();
-
+        let dst = Rect::new_unwrap(x, y, w, h);
         self.copy(context, tileset, Some(src), dst);
     }
 
