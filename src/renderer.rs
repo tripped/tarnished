@@ -188,7 +188,6 @@ impl Renderer {
     }
 
     /// Draw a string using a specified font.
-    /// XXX: not affected by copy scaling -- yet!
     pub fn draw_text(&mut self, context: &mut RenderContext,
                      text: &str, font: &str, x: i32, y: i32) {
         // Check the texture cache for this string
