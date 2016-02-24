@@ -78,10 +78,11 @@ impl RenderContext {
 
     /// Query information about a texture by its asset name.
     pub fn query(&mut self, asset: &str,
-                 renderer: &sdl2::render::Renderer) -> TextureQuery {
-        // XXX: we expect this unwrap to be safe, but really we shouldn't
-        let tex = self.get_texture(asset, renderer).unwrap();
-        tex.query()
+                 renderer: &sdl2::render::Renderer) -> Option<TextureQuery> {
+        match self.get_texture(asset, renderer) {
+            Some(tex) => Some(tex.query()),
+            None => None
+        }
     }
 }
 
@@ -182,7 +183,7 @@ impl Renderer {
 
     pub fn draw(&mut self, context: &mut RenderContext,
                 asset: &str, hpos: HPos, vpos: VPos) {
-        let query = context.query(asset, &self.renderer);
+        let query = context.query(asset, &self.renderer).unwrap();
         let width = query.width as i32;
         let height = query.height as i32;
 
