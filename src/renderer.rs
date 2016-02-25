@@ -95,11 +95,20 @@ pub struct Renderer<'a> {
 }
 
 impl<'a> Renderer<'a> {
-    pub fn new(renderer: &'a mut sdl2::render::Renderer<'static>)
-        -> Renderer<'a> {
+    /// Create a new Renderer, wrapping an existing SDL Renderer and
+    /// setting up drawing for the specified scale and translation.
+    ///
+    /// XXX: currently has the side effect that, even after the new
+    /// object is dropped, the underlying renderer will still have
+    /// its scale modified.
+    pub fn new(renderer: &'a mut sdl2::render::Renderer<'static>,
+               offset: (i32, i32),
+               scale: (f32, f32)) -> Renderer<'a> {
+        let (sx, sy) = scale;
+        renderer.set_scale(sx, sy);
         Renderer {
             renderer: renderer,
-            offset: (0, 0),
+            offset: offset,
         }
     }
 
