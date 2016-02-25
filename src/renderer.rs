@@ -43,12 +43,14 @@ fn load_texture(asset: &str, renderer: &sdl2::render::Renderer) -> Texture {
 /// XXX: rename?
 pub struct RenderContext {
     textures: HashMap<String, Texture>,
+    ttf: sdl2_ttf::Sdl2TtfContext,
 }
 
 impl RenderContext {
-    pub fn new() -> RenderContext {
+    pub fn new(ttf: sdl2_ttf::Sdl2TtfContext) -> RenderContext {
         RenderContext {
             textures: HashMap::new(),
+            ttf: ttf,
         }
     }
 
@@ -89,16 +91,13 @@ impl RenderContext {
 /// Renderer: 1. n. A person or thing that renders.
 pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
-    ttf: sdl2_ttf::Sdl2TtfContext,
     offset: (i32, i32),
 }
 
 impl Renderer {
-    pub fn new(renderer: sdl2::render::Renderer<'static>,
-               ttf: sdl2_ttf::Sdl2TtfContext) -> Renderer {
+    pub fn new(renderer: sdl2::render::Renderer<'static>) -> Renderer {
         Renderer {
             renderer: renderer,
-            ttf: ttf,
             offset: (0, 0),
         }
     }
@@ -184,7 +183,7 @@ impl Renderer {
         if !context.has_texture(&id) {
             let path = font.to_string() + ".ttf";
             let path = Path::new(&path);
-            let font = self.ttf.load_font(path, 14).unwrap();
+            let font = context.ttf.load_font(path, 14).unwrap();
 
             // render a surface, and convert it to a texture
             // XXX: configurable text color

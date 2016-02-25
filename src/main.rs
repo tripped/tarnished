@@ -137,8 +137,8 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut render_context = RenderContext::new();
-    let mut renderer = Renderer::new(renderer, ttf);
+    let mut render_context = RenderContext::new(ttf);
+    let mut renderer = Renderer::new(renderer);
     renderer.set_global_scale(4.0, 4.0);
 
     // Start making noise
