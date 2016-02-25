@@ -67,16 +67,12 @@ impl<'a> Scene<'a> {
     /// Consumes the scene's contents in the process.
     pub fn present(mut self, renderer: &mut Renderer,
                    context: &mut RenderContext) {
-        renderer.clear();
-
         loop {
             match self.elements.pop() {
                 Some(element) => element.object.show(renderer, context),
                 None => break
             }
         }
-
-        renderer.present();
     }
 }
 

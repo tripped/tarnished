@@ -126,7 +126,7 @@ fn main() {
     let video = sdl_context.video().unwrap();
     let ttf = sdl2_ttf::init().unwrap();
 
-    let window = video.window("Tarnished", 800, 500)
+    let window = video.window("Tarnished", 960, 600)
         .position_centered()
         .resizable()
         .build()
@@ -166,8 +166,8 @@ fn main() {
     let starman = sprite("assets/starmanjr",
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
-        Rect::new_unwrap(16, 16, 128, 64));
-    let hello = text("Hello, world!", "assets/orangekid", 75, 50);
+        Rect::new_unwrap(12, 12, 32, 16));
+    let hello = text("$0.00", "assets/orangekid", 30, 18);
 
     let mut map = MapLayer::from_file("assets/map.json")
         .unwrap_or(MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]));
@@ -250,7 +250,7 @@ fn main() {
             hero.tick();
 
             // For now, base scene offset on hero's position
-            off_x = -hero.x + 80;
+            off_x = -hero.x + 110;
             off_y = -hero.y + 60;
         } else {
             stupid_ticker += dt;
@@ -263,20 +263,29 @@ fn main() {
         let rendered_map = map.render();
         let rendered_hero = hero.render();
 
-        let mut scene = Scene::new();
+        {
+            let mut world = Scene::new();
+            world.add_all(&rendered_map, -1);
+            world.add(&rendered_hero, 0);
+            world.add(&starman, 0);
 
-        scene.add(&starman, 0);
+            // XXX: renderer creation could probably be handled by Scene
+            let mut renderer = Renderer::new(
+                &mut renderer, (off_x, off_y), (scale_x, scale_y));
+            world.present(&mut renderer, &mut render_context);
+        }
 
-        scene.add_all(&rendered_box, 1);
-        scene.add_all(&rendered_map, -1);
+        {
+            let mut hud = Scene::new();
+            hud.add_all(&rendered_box, 1);
+            hud.add(&hello, 2);
 
-        scene.add(&hello, 2);
+            let mut renderer = Renderer::new(
+                &mut renderer, (0, 0), (scale_x, scale_y));
+            hud.present(&mut renderer, &mut render_context);
+        }
 
-        scene.add(&rendered_hero, 0);
-
-        let mut renderer = Renderer::new(
-            &mut renderer, (off_x, off_y), (scale_x, scale_y));
-        scene.present(&mut renderer, &mut render_context);
+        renderer.present();
 
         frames += 1;
     }
