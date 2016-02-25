@@ -86,34 +86,6 @@ impl RenderContext {
     }
 }
 
-/// XXX: rename this to Renderer, rename Renderer to something else
-/// This trait abstracts the basic drawing operations.
-/// XXX: maybe we could lift the RenderContext argument into trait
-/// implementation constructors? Might be more convenient.
-pub trait PixelToaster {
-    /// Render an asset to the target surface.
-    fn copy(&mut self, context: &mut RenderContext,
-                asset: &str, src: Option<Rect>, dst: Rect);
-
-    /// Draw a single texture using specified horizontal and vertical alignment.
-    fn draw(&mut self, context: &mut RenderContext,
-            asset: &str, hpos: HPos, vpos: VPos) {
-    }
-
-    /// Draw the nth tile of specified size from a texture, at a specified
-    /// position. Alignment is top-left.
-    fn draw_tile(&mut self, context: &mut RenderContext,
-                 tileset: &str, n: u32, w: u32, h: u32,
-                 x: i32, y: i32) {
-    }
-
-    /// Draw a string using a specified font.
-    /// XXX: Re-loads the font for every string drawn! That's stupid!
-    fn draw_text(&mut self, context: &mut RenderContext,
-                 text: &str, font: &str, x: i32, y: i32) {
-    }
-}
-
 /// Renderer: 1. n. A person or thing that renders.
 pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
