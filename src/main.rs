@@ -265,7 +265,6 @@ fn main() {
 
         let mut scene = Scene::new();
 
-        scene.set_viewport((off_x, off_y));
         scene.add(&starman, 0);
 
         scene.add_all(&rendered_box, 1);
@@ -275,8 +274,8 @@ fn main() {
 
         scene.add(&rendered_hero, 0);
 
-        let mut renderer = Renderer::new(&mut renderer, (0, 0),
-                                         (scale_x, scale_y));
+        let mut renderer = Renderer::new(
+            &mut renderer, (off_x, off_y), (scale_x, scale_y));
         scene.present(&mut renderer, &mut render_context);
 
         frames += 1;

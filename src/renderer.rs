@@ -112,10 +112,6 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    pub fn set_viewport(&mut self, offset: (i32, i32)) {
-        self.offset = offset;
-    }
-
     pub fn clear(&mut self) {
         self.renderer.clear();
     }

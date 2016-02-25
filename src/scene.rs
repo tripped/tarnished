@@ -40,20 +40,13 @@ impl<'a> Eq for Instruction<'a> { }
 /// A Scene is a place where Visibles may be shown.
 pub struct Scene<'a> {
     elements: BinaryHeap<Instruction<'a>>,
-    // TODO: should probably specify full viewport rectangle
-    offset: (i32, i32),
 }
 
 impl<'a> Scene<'a> {
     pub fn new() -> Scene<'a> {
         Scene {
             elements: BinaryHeap::new(),
-            offset: (0, 0),
         }
-    }
-
-    pub fn set_viewport(&mut self, offset: (i32, i32)) {
-        self.offset = offset;
     }
 
     pub fn add(&mut self, element: &'a Visible, z_index: i32) {
@@ -75,7 +68,6 @@ impl<'a> Scene<'a> {
     pub fn present(&mut self, renderer: &mut Renderer,
                    context: &mut RenderContext) {
         renderer.clear();
-        renderer.set_viewport(self.offset);
 
         loop {
             match self.elements.pop() {
