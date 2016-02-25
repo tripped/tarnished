@@ -120,7 +120,8 @@ impl<'a> Renderer<'a> {
         self.renderer.present();
     }
 
-    /// Copy texture, scaled by the default copy scale
+    /// Copy a named texture onto the rendering surface at specified
+    /// destination rect, with optional source rect.
     fn copy(&mut self, context: &mut RenderContext,
             asset: &str, src: Option<Rect>, dst: Rect) {
         let tex = context.get_texture(asset, &self.renderer).unwrap();
