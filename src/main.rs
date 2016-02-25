@@ -132,13 +132,13 @@ fn main() {
         .build()
         .unwrap();
 
-    let renderer = window.renderer()
+    let mut renderer = window.renderer()
         .accelerated()
         .build()
         .unwrap();
 
     let mut render_context = RenderContext::new(ttf);
-    let mut renderer = Renderer::new(renderer);
+    let mut renderer = Renderer::new(&mut renderer);
     renderer.set_global_scale(4.0, 4.0);
 
     // Start making noise

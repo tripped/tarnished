@@ -89,13 +89,14 @@ impl RenderContext {
 }
 
 /// Renderer: 1. n. A person or thing that renders.
-pub struct Renderer {
-    renderer: sdl2::render::Renderer<'static>,
+pub struct Renderer<'a> {
+    renderer: &'a mut sdl2::render::Renderer<'static>,
     offset: (i32, i32),
 }
 
-impl Renderer {
-    pub fn new(renderer: sdl2::render::Renderer<'static>) -> Renderer {
+impl<'a> Renderer<'a> {
+    pub fn new(renderer: &'a mut sdl2::render::Renderer<'static>)
+        -> Renderer<'a> {
         Renderer {
             renderer: renderer,
             offset: (0, 0),
