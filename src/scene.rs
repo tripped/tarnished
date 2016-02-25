@@ -65,7 +65,7 @@ impl<'a> Scene<'a> {
 
     /// Presents the scene onto the specified renderer.
     /// Consumes the scene's contents in the process.
-    pub fn present(&mut self, renderer: &mut Renderer,
+    pub fn present(mut self, renderer: &mut Renderer,
                    context: &mut RenderContext) {
         renderer.clear();
 
