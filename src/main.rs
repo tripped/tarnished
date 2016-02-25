@@ -8,6 +8,7 @@ extern crate bincode;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
+use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 
@@ -262,6 +263,9 @@ fn main() {
         let rendered_box = textbox.render();
         let rendered_map = map.render();
         let rendered_hero = hero.render();
+
+        renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
+        renderer.clear();
 
         {
             let mut world = Scene::new();
