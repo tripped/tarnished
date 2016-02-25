@@ -112,21 +112,6 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    pub fn clear(&mut self) {
-        self.renderer.clear();
-    }
-
-    pub fn clear_to_color(&mut self, color: Color) {
-        let old_color = self.renderer.draw_color();
-        self.renderer.set_draw_color(color);
-        self.renderer.clear();
-        self.renderer.set_draw_color(old_color);
-    }
-
-    pub fn present(&mut self) {
-        self.renderer.present();
-    }
-
     /// Copy a named texture onto the rendering surface at specified
     /// destination rect, with optional source rect.
     fn copy(&mut self, context: &mut RenderContext,
