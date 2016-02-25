@@ -116,16 +116,6 @@ impl<'a> Renderer<'a> {
         self.offset = offset;
     }
 
-    /// Get the scaling factors applied to everything.
-    pub fn global_scale(&self) -> (f32, f32) {
-        self.renderer.scale()
-    }
-
-    /// Set the scaling factors applied to everything.
-    pub fn set_global_scale(&mut self, xscale: f32, yscale: f32) {
-        self.renderer.set_scale(xscale, yscale);
-    }
-
     pub fn clear(&mut self) {
         self.renderer.clear();
     }

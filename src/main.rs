@@ -138,7 +138,10 @@ fn main() {
         .unwrap();
 
     let mut render_context = RenderContext::new(ttf);
-    let mut renderer = Renderer::new(&mut renderer, (0, 0), (4.0, 4.0));
+
+    // The default scaling factors we'll apply when rendering
+    let mut scale_x = 4.0;
+    let mut scale_y = 4.0;
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
@@ -185,12 +188,12 @@ fn main() {
                     break 'mainloop
                 },
                 Event::KeyDown {keycode: Some(Keycode::RightBracket), ..} => {
-                    let (xs, ys) = renderer.global_scale();
-                    renderer.set_global_scale(xs+0.2, ys+0.2);
+                    scale_x += 0.2;
+                    scale_y += 0.2;
                 },
                 Event::KeyDown {keycode: Some(Keycode::LeftBracket), ..} => {
-                    let (xs, ys) = renderer.global_scale();
-                    renderer.set_global_scale(xs-0.2, ys-0.2);
+                    scale_x -= 0.2;
+                    scale_y -= 0.2;
                 },
                 Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
                     hero.direction = Direction::Up;
@@ -272,6 +275,8 @@ fn main() {
 
         scene.add(&rendered_hero, 0);
 
+        let mut renderer = Renderer::new(&mut renderer, (0, 0),
+                                         (scale_x, scale_y));
         scene.present(&mut renderer, &mut render_context);
 
         frames += 1;
