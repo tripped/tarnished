@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
+use sdl2;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
@@ -65,14 +66,24 @@ impl<'a> Scene<'a> {
 
     /// Presents the scene onto the specified renderer.
     /// Consumes the scene's contents in the process.
-    pub fn present(mut self, renderer: &mut Renderer,
-                   context: &mut RenderContext) {
+    pub fn present(mut self, renderer: &mut sdl2::render::Renderer<'static>,
+                   context: &mut RenderContext,
+                   translation: (i32, i32),
+                   scale: (f32, f32)) {
+        let mut renderer = Renderer::new(renderer, translation, scale);
         loop {
             match self.elements.pop() {
-                Some(element) => element.object.show(renderer, context),
+                Some(element) => element.object.show(&mut renderer, context),
                 None => break
             }
         }
+    }
+
+    pub fn present_scaled(self,
+                          renderer: &mut sdl2::render::Renderer<'static>,
+                          context: &mut RenderContext,
+                          scale: (f32, f32)) {
+        self.present(renderer, context, (0, 0), scale);
     }
 }
 

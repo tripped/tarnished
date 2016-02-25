@@ -17,7 +17,7 @@ mod scene;
 mod textbox;
 mod map;
 use scene::{Scene, Tile, sprite, text};
-use renderer::{Renderer, RenderContext, HPos, VPos};
+use renderer::{RenderContext, HPos, VPos};
 use textbox::Textbox;
 use map::MapLayer;
 
@@ -272,21 +272,16 @@ fn main() {
             world.add_all(&rendered_map, -1);
             world.add(&rendered_hero, 0);
             world.add(&starman, 0);
-
-            // XXX: renderer creation could probably be handled by Scene
-            let mut renderer = Renderer::new(
-                &mut renderer, (off_x, off_y), (scale_x, scale_y));
-            world.present(&mut renderer, &mut render_context);
+            world.present(&mut renderer, &mut render_context,
+                          (off_x, off_y), (scale_x, scale_y));
         }
 
         {
             let mut hud = Scene::new();
             hud.add_all(&rendered_box, 1);
             hud.add(&hello, 2);
-
-            let mut renderer = Renderer::new(
-                &mut renderer, (0, 0), (scale_x, scale_y));
-            hud.present(&mut renderer, &mut render_context);
+            hud.present_scaled(
+                &mut renderer, &mut render_context, (scale_x, scale_y));
         }
 
         renderer.present();
