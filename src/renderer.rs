@@ -116,6 +116,13 @@ impl<'a> Renderer<'a> {
         self.renderer.clear();
     }
 
+    pub fn clear_to_color(&mut self, color: Color) {
+        let old_color = self.renderer.draw_color();
+        self.renderer.set_draw_color(color);
+        self.renderer.clear();
+        self.renderer.set_draw_color(old_color);
+    }
+
     pub fn present(&mut self) {
         self.renderer.present();
     }
