@@ -119,7 +119,6 @@ pub struct Renderer {
     renderer: sdl2::render::Renderer<'static>,
     ttf: sdl2_ttf::Sdl2TtfContext,
     offset: (i32, i32),
-    scale: (f32, f32),
 }
 
 impl Renderer {
@@ -129,22 +128,11 @@ impl Renderer {
             renderer: renderer,
             ttf: ttf,
             offset: (0, 0),
-            scale: (1.0, 1.0),
         }
     }
 
     pub fn set_viewport(&mut self, offset: (i32, i32)) {
         self.offset = offset;
-    }
-
-    /// Get the scaling factors used by default for copying textures.
-    pub fn copy_scale(&self) -> (f32, f32) {
-        self.scale
-    }
-
-    /// Set the scaling factors used by default for copying textures.
-    pub fn set_copy_scale(&mut self, xs: f32, ys: f32) {
-        self.scale = (xs, ys);
     }
 
     /// Get the scaling factors applied to everything.
@@ -171,11 +159,10 @@ impl Renderer {
         let tex = context.get_texture(asset, &self.renderer).unwrap();
 
         let (dx, dy) = self.offset;
-        let (sx, sy) = self.scale;
-        let x = ((dst.x() + dx) as f32 * sx) as i32;
-        let y = ((dst.y() + dy) as f32 * sy) as i32;
-        let w = (dst.width() as f32 * sx) as u32;
-        let h = (dst.height() as f32 * sy) as u32;
+        let x = (dst.x() + dx) as i32;
+        let y = (dst.y() + dy) as i32;
+        let w = dst.width();
+        let h = dst.height();
         let dst = Rect::new_unwrap(x, y, w, h);
 
         self.renderer.copy(tex, src, Some(dst));

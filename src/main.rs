@@ -139,8 +139,7 @@ fn main() {
 
     let mut render_context = RenderContext::new();
     let mut renderer = Renderer::new(renderer, ttf);
-    renderer.set_global_scale(2.0, 2.0);
-    renderer.set_copy_scale(2.0, 2.0);
+    renderer.set_global_scale(4.0, 4.0);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
