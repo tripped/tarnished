@@ -15,10 +15,12 @@ use snes_spc::SnesSpc;
 mod renderer;
 mod scene;
 mod textbox;
+mod tilepicker;
 mod map;
 use scene::{Scene, Tile, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
 use textbox::Textbox;
+use tilepicker::TilePicker;
 use map::MapLayer;
 
 struct SpcPlayer {
@@ -173,6 +175,11 @@ fn main() {
     let mut map = MapLayer::from_file("assets/map.json")
         .unwrap_or(MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]));
 
+    // XXX: note that this widget is rendered in unscaled space, so its width
+    // of 960 is actually the full window width. Soon these different spaces
+    // should be managed more cleanly.
+    let tilepicker = TilePicker::new(0, 0, 960, 66);
+
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
@@ -283,6 +290,9 @@ fn main() {
             hud.present_scaled(
                 &mut renderer, &mut render_context, (scale_x, scale_y));
         }
+
+        // XXX: really stupid temporary draw call
+        tilepicker.render(&mut renderer, &mut render_context);
 
         renderer.present();
 
