@@ -2,6 +2,8 @@ use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
 use sdl2;
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
@@ -176,5 +178,40 @@ pub fn text(text: &str, font: &str, x: i32, y: i32) -> Text {
 impl Visible for Text {
     fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
         renderer.draw_text(context, &self.text, &self.font, self.x, self.y);
+    }
+}
+
+/// A Visible object that is just a rectangle. Woo, rectangles.
+pub struct Rectangle {
+    rect: Rect,
+    color: Color,
+    filled: bool,
+}
+
+impl Rectangle {
+    pub fn filled(rect: Rect, color: Color) -> Rectangle {
+        Rectangle {
+            rect: rect,
+            color: color,
+            filled: true,
+        }
+    }
+
+    pub fn unfilled(rect: Rect, color: Color) -> Rectangle {
+        Rectangle {
+            rect: rect,
+            color: color,
+            filled: false,
+        }
+    }
+}
+
+impl Visible for Rectangle {
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+        if self.filled {
+            renderer.fill_rect(self.rect, self.color);
+        } else {
+            renderer.draw_rect(self.rect, self.color);
+        }
     }
 }

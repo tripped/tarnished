@@ -186,4 +186,19 @@ impl<'a> Renderer<'a> {
 
         self.draw(context, &id, HPos::Center(x), VPos::Center(y));
     }
+
+    /// Draw a non-filled rectangle onto the target surface.
+    /// NB: note that multiple rectangles drawn in the same layer could be
+    /// optimized into a draw_rects() call. Something to think about when
+    /// implementing the widget system.
+    pub fn draw_rect(&mut self, rect: Rect, color: Color) {
+        self.renderer.set_draw_color(color);
+        self.renderer.draw_rect(rect);
+    }
+
+    /// Draw a filled rectangle onto the target surface.
+    pub fn fill_rect(&mut self, rect: Rect, color: Color) {
+        self.renderer.set_draw_color(color);
+        self.renderer.fill_rect(rect);
+    }
 }
