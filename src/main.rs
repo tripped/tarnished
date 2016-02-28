@@ -179,6 +179,7 @@ fn main() {
     // of 960 is actually the full window width. Soon these different spaces
     // should be managed more cleanly.
     let tilepicker = TilePicker::new(0, 0, 960, 66);
+    let mut show_gui = false;
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
@@ -194,6 +195,9 @@ fn main() {
                 Event::Quit{..} |
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                     break 'mainloop
+                },
+                Event::KeyDown {keycode: Some(Keycode::F), ..} => {
+                    show_gui = !show_gui;
                 },
                 Event::KeyDown {keycode: Some(Keycode::RightBracket), ..} => {
                     scale_x += 0.2;
@@ -291,8 +295,10 @@ fn main() {
                 &mut renderer, &mut render_context, (scale_x, scale_y));
         }
 
-        // XXX: really stupid temporary draw call
-        tilepicker.render(&mut renderer, &mut render_context);
+        if (show_gui) {
+            // XXX: really stupid temporary draw call
+            tilepicker.render(&mut renderer, &mut render_context);
+        }
 
         renderer.present();
 
