@@ -100,7 +100,7 @@ impl Brobot {
         }
     }
 
-    fn render(&self,) -> Tile {
+    fn render(&self) -> Tile {
         let mut frame = match self.direction {
             Direction::Down => 0,
             Direction::Left => 1,
