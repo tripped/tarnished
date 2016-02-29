@@ -226,29 +226,17 @@ fn main() {
                 Event::KeyUp {..} => {
                     hero.state = State::Resting;
                 },
-                Event::MouseWheel {y: scroll_y, ..} => {
-                    tilepicker.scroll(scroll_y);
-                    /*let (_, x, y) = sdl_context.mouse().mouse_state();
-
+                Event::MouseButtonDown {x, y, ..} => {
                     // XXX: We have to explicitly transform by viewport here,
                     // eventually UI should be part of the scene (?)
+                    /*let (_, x, y) = sdl_context.mouse().mouse_state();*/
                     let x = (x / 4 - off_x) as u32;
                     let y = (y / 4 - off_y) as u32;
 
-                    // XXX: figure out this signed/unsigned and error condition
-                    match map.get_px((x, y)) {
-                        Some(tile) => {
-                            map.set_px((x, y),
-                                if scroll_y < 0 && tile > 0 {
-                                    tile - 1
-                                } else if scroll_y > 0 {
-                                    tile + 1
-                                } else {
-                                    0
-                                }).ok();
-                        },
-                        _ => {}
-                    }*/
+                    map.set_px((x, y), tilepicker.selected());
+                },
+                Event::MouseWheel {y: scroll_y, ..} => {
+                    tilepicker.scroll(scroll_y);
                 },
                 _ => { }
             }

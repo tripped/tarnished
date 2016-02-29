@@ -9,6 +9,7 @@ pub struct TilePicker {
     // widget has total ownership of its position for now
     rect: Rect,
     offset: u32,
+    selected: u32,
 }
 
 impl TilePicker {
@@ -20,7 +21,12 @@ impl TilePicker {
             tile_height: tile_height,
             rect: Rect::new_unwrap(x, y, width, height),
             offset: 0,
+            selected: 0,
         }
+    }
+
+    pub fn selected(&self) -> u32 {
+        return self.selected;
     }
 
     pub fn scroll(&mut self, delta: i32) {
