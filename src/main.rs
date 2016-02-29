@@ -178,7 +178,7 @@ fn main() {
     // XXX: note that this widget is rendered in unscaled space, so its width
     // of 960 is actually the full window width. Soon these different spaces
     // should be managed more cleanly.
-    let tilepicker = TilePicker::new(0, 0, 960, 66);
+    let tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
     let mut show_gui = false;
 
     let mut frames = 0u32;
@@ -296,10 +296,13 @@ fn main() {
         }
 
         if (show_gui) {
-            // This rendering bit is kind of "all wires exposed"
-            let rects = tilepicker.render();
+            // This rendering bit is kind of "all wires exposed"; once we
+            // figure out a more managed structure for getting Visibles from
+            // widget to Scene, this will all look much nicer.
+            let (rects, tiles) = tilepicker.render();
             let mut gui = Scene::new();
             gui.add_all(&rects, 0);
+            gui.add_all(&tiles, 1);
             gui.present(&mut renderer, &mut render_context, (0, 0), (1.0, 1.0));
         }
 
