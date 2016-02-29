@@ -35,6 +35,22 @@ impl TilePicker {
         }
     }
 
+    pub fn click(&mut self, abs_pos: (i32, i32)) -> bool {
+        let (x, y) = abs_pos;
+
+        // XXX: our version of sdl2 doesn't have Rect::contains??
+        if x < self.rect.x() || x > self.rect.x() + self.rect.width() as i32 ||
+            y < self.rect.y() || y > self.rect.y() + self.rect.height() as i32 {
+            return false;
+        }
+
+        let x = x - self.rect.x();
+        // Select a new tile
+        // XXX: hardcoded layout bad!
+        self.selected = (x / 65) as u32 + self.offset;
+        return true;
+    }
+
     /// Render the tileset picker.
     /// XXX: this is kind of an experiment in different render structures
     pub fn render(&self) -> (Vec<Rectangle>, Vec<Tex>) {
