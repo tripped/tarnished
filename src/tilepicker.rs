@@ -30,7 +30,7 @@ impl TilePicker {
     }
 
     pub fn scroll(&mut self, delta: i32) {
-        if delta > 0 || self.offset > delta.abs() as u32 {
+        if delta > 0 || self.offset >= delta.abs() as u32 {
             self.offset = (self.offset as i32 + delta) as u32;
         }
     }
