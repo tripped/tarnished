@@ -17,18 +17,10 @@ impl TilePicker {
     }
 
     /// Render the tileset picker.
-    /// XXX: this is dirty and wrong. A single widget should render itself as
-    /// a set of drawing instructions, not accept a Renderer directly and do
-    /// naughty things to it. This is just a temporary hack to get this widget
-    /// drawn, since we will need heterogeneous Visibles, and the current API
-    /// doesn't make that very pretty.
-    pub fn render(&self,
-                  renderer: &mut sdl2::render::Renderer<'static>,
-                  context: &mut RenderContext) {
+    /// XXX: this is kind of an experiment in different render structures
+    pub fn render(&self) -> Vec<Rectangle> {
         // First, fill the whole space with a sexy dark rectangle
-        let bg = Rectangle::filled(self.rect, Color::RGBA(32, 32, 32, 255));
-        let mut scene = Scene::new();
-        scene.add(&bg, 0);
-        scene.present(renderer, context, (0, 0), (1.0, 1.0));
+        vec![
+            Rectangle::filled(self.rect, Color::RGBA(32, 32, 32, 255))]
     }
 }

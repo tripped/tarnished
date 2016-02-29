@@ -296,8 +296,11 @@ fn main() {
         }
 
         if (show_gui) {
-            // XXX: really stupid temporary draw call
-            tilepicker.render(&mut renderer, &mut render_context);
+            // This rendering bit is kind of "all wires exposed"
+            let rects = tilepicker.render();
+            let mut gui = Scene::new();
+            gui.add_all(&rects, 0);
+            gui.present(&mut renderer, &mut render_context, (0, 0), (1.0, 1.0));
         }
 
         renderer.present();
