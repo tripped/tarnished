@@ -178,7 +178,7 @@ fn main() {
     // XXX: note that this widget is rendered in unscaled space, so its width
     // of 960 is actually the full window width. Soon these different spaces
     // should be managed more cleanly.
-    let tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
+    let mut tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
     let mut show_gui = false;
 
     let mut frames = 0u32;
@@ -227,7 +227,8 @@ fn main() {
                     hero.state = State::Resting;
                 },
                 Event::MouseWheel {y: scroll_y, ..} => {
-                    let (_, x, y) = sdl_context.mouse().mouse_state();
+                    tilepicker.scroll(scroll_y);
+                    /*let (_, x, y) = sdl_context.mouse().mouse_state();
 
                     // XXX: We have to explicitly transform by viewport here,
                     // eventually UI should be part of the scene (?)
@@ -247,7 +248,7 @@ fn main() {
                                 }).ok();
                         },
                         _ => {}
-                    }
+                    }*/
                 },
                 _ => { }
             }
