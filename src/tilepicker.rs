@@ -1,6 +1,4 @@
-use scene::{Scene, Rectangle};
-use renderer::RenderContext;
-use sdl2;
+use scene::{Rectangle};
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
