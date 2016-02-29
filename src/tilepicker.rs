@@ -39,7 +39,7 @@ impl TilePicker {
     /// XXX: this is kind of an experiment in different render structures
     pub fn render(&self) -> (Vec<Rectangle>, Vec<Tex>) {
         // First, fill the whole space with a sexy dark rectangle
-        let rects = vec![
+        let mut rects = vec![
             Rectangle::filled(self.rect, Color::RGBA(32, 32, 32, 255))];
 
         // Draw some tiles!
@@ -62,6 +62,15 @@ impl TilePicker {
                 (i * (w + padding)) as i32, padding as i32, w, h);
 
             tiles.push(Tex::new(&self.tileset, Some(src), dst));
+
+            // Add a rectangle if this tile is selected
+            if tile == self.selected {
+                rects.push(
+                    Rectangle::filled(
+                        Rect::new_unwrap(
+                            (i * w) as i32, 0, w + 2*padding, h + 2*padding),
+                        Color::RGBA(255, 0, 0, 255)));
+            }
         }
 
         (rects, tiles)
