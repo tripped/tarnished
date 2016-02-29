@@ -89,7 +89,35 @@ impl<'a> Scene<'a> {
     }
 }
 
-/// A Visible object that consists of a single texture.
+/// A Visible object that consists of a single texture copy with specified
+/// source and destination. The most primitive texture-based Visible.
+pub struct Tex {
+    asset: String,
+    src: Option<Rect>,
+    dst: Rect,
+}
+
+impl Tex {
+    pub fn new(asset: &str, src: Option<Rect>, dst: Rect) -> Tex {
+        Tex {
+            asset: asset.into(),
+            src: src,
+            dst: dst,
+        }
+    }
+}
+
+impl Visible for Tex {
+    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+        renderer.copy(context, &self.asset, self.src, self.dst);
+    }
+}
+
+/// A Visible object that consists of a single texture drawn at its native
+/// scale, using dimension-aware alignment.
+/// XXX: resolve generality/usefulness mismatch here between Tex, Sprite,
+/// and Tile -- seems like there's too much overlap and we keep bumping into
+/// it in the higher layers.
 pub struct Sprite {
     name: String,
     hpos: HPos,

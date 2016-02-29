@@ -114,7 +114,7 @@ impl<'a> Renderer<'a> {
 
     /// Copy a named texture onto the rendering surface at specified
     /// destination rect, with optional source rect.
-    fn copy(&mut self, context: &mut RenderContext,
+    pub fn copy(&mut self, context: &mut RenderContext,
             asset: &str, src: Option<Rect>, dst: Rect) {
         let tex = context.get_texture(asset, &self.renderer).unwrap();
 
