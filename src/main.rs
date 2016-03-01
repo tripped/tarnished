@@ -17,11 +17,14 @@ mod scene;
 mod textbox;
 mod tilepicker;
 mod map;
+mod brobot;
+
 use scene::{Scene, Tile, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
 use textbox::Textbox;
 use tilepicker::TilePicker;
 use map::MapLayer;
+use brobot::{Direction, State, Brobot};
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -31,96 +34,6 @@ impl AudioCallback for SpcPlayer {
     type Channel = i16;
     fn callback(&mut self, out: &mut [i16]) {
         self.emulator.play(out).unwrap();
-    }
-}
-
-enum Direction {
-    Down,
-    Left,
-    Up,
-    Right,
-}
-
-enum State {
-    Walking,
-    Resting,
-}
-
-struct Brobot {
-    asset: String,
-    w: u32,
-    h: u32,
-    x: i32,
-    y: i32,
-    state: State,
-    direction: Direction,
-    time: u32,
-    step: u32,
-    // XXX: really need a better way to represent movement speed at these
-    // small discrete pixel scales. It's probably okay to just use floats
-    // internally and alias.
-    freq: u32,
-}
-
-impl Brobot {
-    fn new(asset: &str, w: u32, h: u32) -> Brobot {
-        Brobot {
-            asset: asset.into(),
-            w: w, h: h,
-            x: 0, y: 0,
-            state: State::Resting,
-            direction: Direction::Down,
-            time: 0,
-            step: 30,
-            freq: 2
-        }
-    }
-
-    fn tick(&mut self) {
-        self.time += 1;
-
-        if self.time % self.freq != 0 {
-            return;
-        }
-
-        match self.state {
-            State::Walking => match self.direction {
-                Direction::Left => {
-                    self.x -= 1;
-                },
-                Direction::Right => {
-                    self.x += 1;
-                },
-                Direction::Up => {
-                    self.y -= 1;
-                },
-                Direction::Down => {
-                    self.y += 1;
-                }
-            },
-            _ => {}
-        }
-    }
-
-    fn render(&self) -> Tile {
-        let mut frame = match self.direction {
-            Direction::Down => 0,
-            Direction::Left => 1,
-            Direction::Up => 2,
-            Direction::Right => 3
-        };
-
-        // If walking, use the step-up frame every so often
-        // XXX: should probably be part of tick(), or take freq into account
-        match self.state {
-            State::Walking => if (self.time / self.step) % 2 == 0 {
-                // XXX: hardcoded frame offsets = gross
-                frame += 4;
-            },
-            _ => {}
-        }
-
-        Tile::new(&self.asset, frame, self.w, self.h, self.x, self.y)
     }
 }
 
@@ -184,9 +97,7 @@ fn main() {
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
-    let mut hero = Brobot::new("assets/hero", 16, 24);
-    hero.x = 85;
-    hero.y = 100;
+    let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100);
     let mut stupid_ticker = 0;
 
     'mainloop: loop {
@@ -207,24 +118,11 @@ fn main() {
                     scale_x -= 0.2;
                     scale_y -= 0.2;
                 },
-                Event::KeyDown {keycode: Some(Keycode::Up), ..} => {
-                    hero.direction = Direction::Up;
-                    hero.state = State::Walking;
-                },
-                Event::KeyDown {keycode: Some(Keycode::Down), ..} => {
-                    hero.direction = Direction::Down;
-                    hero.state = State::Walking;
-                },
-                Event::KeyDown {keycode: Some(Keycode::Left), ..} => {
-                    hero.direction = Direction::Left;
-                    hero.state = State::Walking;
-                },
-                Event::KeyDown {keycode: Some(Keycode::Right), ..} => {
-                    hero.direction = Direction::Right;
-                    hero.state = State::Walking;
+                Event::KeyDown {keycode: Some(code), ..} => {
+                    hero.key_down(code);
                 },
                 Event::KeyUp {..} => {
-                    hero.state = State::Resting;
+                    hero.key_up();
                 },
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui || !tilepicker.click((x, y)) {
@@ -253,8 +151,8 @@ fn main() {
             hero.tick();
 
             // For now, base scene offset on hero's position
-            off_x = -hero.x + 110;
-            off_y = -hero.y + 60;
+            off_x = -hero.x() + 110;
+            off_y = -hero.y() + 60;
         } else {
             stupid_ticker += dt;
         }
