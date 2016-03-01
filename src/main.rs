@@ -111,12 +111,12 @@ fn main() {
                     show_gui = !show_gui;
                 },
                 Event::KeyDown {keycode: Some(Keycode::RightBracket), ..} => {
-                    scale_x += 0.2;
-                    scale_y += 0.2;
+                    scale_x += 0.5;
+                    scale_y += 0.5;
                 },
                 Event::KeyDown {keycode: Some(Keycode::LeftBracket), ..} => {
-                    scale_x -= 0.2;
-                    scale_y -= 0.2;
+                    scale_x -= 0.5;
+                    scale_y -= 0.5;
                 },
                 Event::KeyDown {keycode: Some(code), ..} => {
                     hero.key_down(code);
@@ -129,8 +129,8 @@ fn main() {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
                         /*let (_, x, y) = sdl_context.mouse().mouse_state();*/
-                        let x = (x / 4 - off_x) as u32;
-                        let y = (y / 4 - off_y) as u32;
+                        let x = (x as f32 / scale_x - off_x as f32) as u32;
+                        let y = (y as f32 / scale_y - off_y as f32) as u32;
 
                         map.set_px((x, y), tilepicker.selected());
                     }
