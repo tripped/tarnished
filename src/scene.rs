@@ -235,7 +235,7 @@ impl Rectangle {
 }
 
 impl Visible for Rectangle {
-    fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
+    fn show(&self, renderer: &mut Renderer, _: &mut RenderContext) {
         if self.filled {
             renderer.fill_rect(self.rect, self.color);
         } else {
