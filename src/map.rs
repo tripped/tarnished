@@ -72,36 +72,45 @@ impl MapLayer {
         self.tiles.len() as u32 / self.width
     }
 
-    /// Get the tile value at a specified point (in pixels)
-    pub fn get_px(&self, (x, y): (u32, u32)) -> Option<u32> {
+    /// Map a point in pixels to the index of the tile containing that point.
+    fn point_to_index(&self, (x, y): (u32, u32)) -> Option<usize> {
         let x = x / self.tile_w;
         let y = y / self.tile_h;
-        let i = (y * self.width + x) as usize;
-        println!("Get from map at {}, {} => idx {}", x, y, i);
-        if x >= self.width || i >= self.tiles.len() {
-            None
-        } else {
-            Some(self.tiles[i])
+        if x >= self.width() || y >= self.height() {
+            return None;
+        }
+        Some((y * self.width() + x) as usize)
+    }
+
+    /// Get the tile value at a specified point (in pixels)
+    pub fn get_px(&self, point: (u32, u32)) -> Option<u32> {
+        match self.point_to_index(point) {
+            Some(index) => Some(self.tiles[index]),
+            None => None,
         }
     }
 
     /// Set the tile value at a specified point (in pixels)
-    pub fn set_px(&mut self, (x, y): (u32, u32), tile: u32) -> Result<(), ()> {
-        let height = self.tiles.len() as u32 / self.width;
-        if x >= self.width || y >= height {
-            return Err(());
-        }
-        let x = x / self.tile_w;
-        let y = y / self.tile_h;
-        let i = (y * self.width + x) as usize;
-        if x >= self.width || i >= self.tiles.len() {
-            Err(())
-        } else {
-            self.tiles[i] = tile;
-            Ok(())
+    pub fn set_px(&mut self, point: (u32, u32), tile: u32) -> Result<(), ()> {
+        match self.point_to_index(point) {
+            Some(index) => {
+                self.tiles[index] = tile;
+                Ok(())
+            },
+            None => Err(()),
         }
     }
+}
 
+#[test]
+fn point_to_index() {
+    let map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
+    assert_eq!(Some(0), map.point_to_index((0, 0)));
+    assert_eq!(Some(1), map.point_to_index((1*16, 0)));
+    assert_eq!(Some(2), map.point_to_index((2*16, 0)));
+    assert_eq!(Some(25), map.point_to_index((0, 1*16)));
+    assert_eq!(Some(50), map.point_to_index((0, 2*16)));
+    assert_eq!(Some(0), map.point_to_index((0, 0)));
 }
 
 #[test]
