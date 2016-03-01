@@ -77,6 +77,10 @@ impl MapLayer {
 
     /// Set the tile value at a specified point (in pixels)
     pub fn set_px(&mut self, (x, y): (u32, u32), tile: u32) -> Result<(), ()> {
+        let height = self.tiles.len() as u32 / self.width;
+        if x >= self.width || y >= height {
+            return Err(());
+        }
         let x = x / self.tile_w;
         let y = y / self.tile_h;
         let i = (y * self.width + x) as usize;
