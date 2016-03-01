@@ -19,12 +19,12 @@ mod tilepicker;
 mod map;
 mod brobot;
 
-use scene::{Scene, Tile, sprite, text};
+use scene::{Scene, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
 use textbox::Textbox;
 use tilepicker::TilePicker;
 use map::MapLayer;
-use brobot::{Direction, State, Brobot};
+use brobot::{Brobot};
 
 struct SpcPlayer {
     emulator: SnesSpc
