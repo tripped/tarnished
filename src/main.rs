@@ -184,7 +184,7 @@ fn main() {
                 &mut renderer, &mut render_context, (scale_x, scale_y));
         }
 
-        if (show_gui) {
+        if show_gui {
             // This rendering bit is kind of "all wires exposed"; once we
             // figure out a more managed structure for getting Visibles from
             // widget to Scene, this will all look much nicer.

@@ -69,7 +69,7 @@ impl TilePicker {
 
         let n = self.rect.width() / w;
 
-        for i in (0..n) {
+        for i in 0..n {
             let tile = i + self.offset;
             let src = Rect::new_unwrap(
                 (tile * self.tile_width) as i32, 0,
