@@ -117,12 +117,16 @@ fn height_works() {
 }
 
 #[test]
-fn set_px_returns_err_on_overflow() {
-    let mut map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
+fn get_px_returns_none_on_overflow() {
+    let map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
 
     // Passing a very large value as y is likely to overflow when trying
     // to compute the index!
-    assert_eq!(
-        map.set_px((1, u32::max_value()), 0),
-        Err(()));
+    assert_eq!(None, map.get_px((1, u32::max_value())));
+}
+
+#[test]
+fn set_px_returns_err_on_overflow() {
+    let mut map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
+    assert_eq!(Err(()), map.set_px((1, u32::max_value()), 0));
 }
