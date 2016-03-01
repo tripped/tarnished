@@ -62,6 +62,16 @@ impl MapLayer {
         result
     }
 
+    /// The width (in tiles) of the map layer.
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    /// The height (in tiles) of the map layer.
+    pub fn height(&self) -> u32 {
+        self.tiles.len() as u32 / self.width
+    }
+
     /// Get the tile value at a specified point (in pixels)
     pub fn get_px(&self, (x, y): (u32, u32)) -> Option<u32> {
         let x = x / self.tile_w;
@@ -91,11 +101,24 @@ impl MapLayer {
             Ok(())
         }
     }
+
 }
 
 #[test]
-fn map_set_px_returns_err_on_overflow() {
-    let mut map = MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]);
+fn width_works() {
+    let map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
+    assert_eq!(map.width(), 25);
+}
+
+#[test]
+fn height_works() {
+    let map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
+    assert_eq!(map.height(), 16);
+}
+
+#[test]
+fn set_px_returns_err_on_overflow() {
+    let mut map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
 
     // Passing a very large value as y is likely to overflow when trying
     // to compute the index!
