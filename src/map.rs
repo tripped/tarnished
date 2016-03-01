@@ -88,3 +88,14 @@ impl MapLayer {
         }
     }
 }
+
+#[test]
+fn map_set_px_returns_err_on_overflow() {
+    let mut map = MapLayer::new("assets/cotp", (16, 16), 25, vec![0;25*16]);
+
+    // Passing a very large value as y is likely to overflow when trying
+    // to compute the index!
+    assert_eq!(
+        map.set_px((1, u32::max_value()), 0),
+        Err(()));
+}
