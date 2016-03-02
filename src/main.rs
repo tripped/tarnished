@@ -132,7 +132,7 @@ fn main() {
                         let x = (x as f32 / scale_x - off_x as f32) as u32;
                         let y = (y as f32 / scale_y - off_y as f32) as u32;
 
-                        map.set_px((x, y), tilepicker.selected());
+                        map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
                 Event::MouseWheel {y: scroll_y, ..} => {
