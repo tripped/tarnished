@@ -93,6 +93,7 @@ fn main() {
     // should be managed more cleanly.
     let mut tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
     let mut show_gui = false;
+    let mut painting = false;
 
     let mut frames = 0u32;
     let start = time::precise_time_ns();
@@ -124,16 +125,25 @@ fn main() {
                 Event::KeyUp {..} => {
                     hero.key_up();
                 },
+                Event::MouseMotion {x, y, mousestate, ..} => {
+                    if painting {
+                        let x = (x as f32 / scale_x - off_x as f32) as u32;
+                        let y = (y as f32 / scale_y - off_y as f32) as u32;
+                        map.set_px((x, y), tilepicker.selected()).ok();
+                    }
+                },
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui || !tilepicker.click((x, y)) {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
-                        /*let (_, x, y) = sdl_context.mouse().mouse_state();*/
                         let x = (x as f32 / scale_x - off_x as f32) as u32;
                         let y = (y as f32 / scale_y - off_y as f32) as u32;
-
                         map.set_px((x, y), tilepicker.selected()).ok();
+                        painting = true;
                     }
+                },
+                Event::MouseButtonUp {..} => {
+                    painting = false;
                 },
                 Event::MouseWheel {y: scroll_y, ..} => {
                     tilepicker.scroll(scroll_y);
