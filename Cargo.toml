@@ -11,3 +11,4 @@ snes_spc = { git = "https://github.com/tripped/rust-snes_spc" }
 time = "0.1"
 rustc-serialize = "*"
 bincode = "*"
+carboxyl = "*"
