@@ -125,7 +125,7 @@ fn main() {
                 Event::KeyUp {..} => {
                     hero.key_up();
                 },
-                Event::MouseMotion {x, y, mousestate, ..} => {
+                Event::MouseMotion {x, y, ..} => {
                     if painting {
                         let x = (x as f32 / scale_x - off_x as f32) as u32;
                         let y = (y as f32 / scale_y - off_y as f32) as u32;
