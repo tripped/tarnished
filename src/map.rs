@@ -139,3 +139,13 @@ fn set_px_returns_err_on_overflow() {
     let mut map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
     assert_eq!(Err(()), map.set_px((1, u32::max_value()), 0));
 }
+
+#[test]
+fn serialize_works() {
+    let map = MapLayer::new("foobar", (16, 16), 4,
+        vec![0, 1, 2, 3, 4, 5, 6, 7]);
+    assert_eq!(
+        map.serialize(),
+        "{\"asset\":\"foobar\",\"tile_w\":16,\"tile_h\":16,\"width\":4,\
+         \"tiles\":[0,1,2,3,4,5,6,7]}");
+}
