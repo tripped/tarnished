@@ -169,10 +169,6 @@ impl Tile {
     }
 }
 
-pub fn tile(tileset: &str, n: u32, w: u32, h: u32, x: i32, y: i32) -> Tile {
-    Tile::new(tileset, n, w, h, x, y)
-}
-
 impl Visible for Tile {
     fn show(&self, renderer: &mut Renderer, context: &mut RenderContext) {
         renderer.draw_tile(context, &self.tileset, self.tile,
