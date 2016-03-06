@@ -83,7 +83,7 @@ impl MapLayer {
     }
 
     /// Get the tile value at a specified point (in pixels)
-    pub fn get_px(&self, point: (u32, u32)) -> Option<u32> {
+    pub fn _get_px(&self, point: (u32, u32)) -> Option<u32> {
         match self.point_to_index(point) {
             Some(index) => Some(self.tiles[index]),
             None => None,
@@ -131,7 +131,7 @@ fn get_px_returns_none_on_overflow() {
 
     // Passing a very large value as y is likely to overflow when trying
     // to compute the index!
-    assert_eq!(None, map.get_px((1, u32::max_value())));
+    assert_eq!(None, map._get_px((1, u32::max_value())));
 }
 
 #[test]

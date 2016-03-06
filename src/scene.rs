@@ -221,7 +221,7 @@ impl Rectangle {
         }
     }
 
-    pub fn unfilled(rect: Rect, color: Color) -> Rectangle {
+    pub fn _unfilled(rect: Rect, color: Color) -> Rectangle {
         Rectangle {
             rect: rect,
             color: color,
