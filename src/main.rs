@@ -4,6 +4,7 @@ extern crate snes_spc;
 extern crate time;
 extern crate rustc_serialize;
 extern crate bincode;
+extern crate carboxyl;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -101,6 +102,9 @@ fn main() {
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100);
     let mut stupid_ticker = 0;
 
+    let keyboard_sink = carboxyl::Sink::new();
+    //let mut keyboard_events = keyboard_sink.stream().events();
+
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
@@ -120,6 +124,7 @@ fn main() {
                     scale_y -= 0.5;
                 },
                 Event::KeyDown {keycode: Some(code), ..} => {
+                    keyboard_sink.send(code);
                     hero.key_down(code);
                 },
                 Event::KeyUp {..} => {
