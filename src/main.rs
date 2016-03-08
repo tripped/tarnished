@@ -103,17 +103,13 @@ fn main() {
 
     let keyboard_sink = carboxyl::Sink::new();
 
-    // Let's model the render scale as a signal which changes in response
-    // to events in the keyboard stream:
-    let keyboard_stream = keyboard_sink.stream();
-    let scale_signal = carboxyl::Signal::cyclic(|a| {
-        a.snapshot(&keyboard_stream, |a, keycode| {
-            match keycode {
-                Keycode::RightBracket => a + 0.5,
-                Keycode::LeftBracket => a - 0.5,
-                _ => a
-            }
-        }).hold(default_scale)
+    // Render scale is a signal changed by accumulated keyboard events
+    let scale_signal = keyboard_sink.stream().fold(4.0, |s, keycode| {
+        match keycode {
+            Keycode::RightBracket => s + 0.5,
+            Keycode::LeftBracket => s - 0.5,
+            _ => s
+        }
     });
 
     'mainloop: loop {
