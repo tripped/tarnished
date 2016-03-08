@@ -56,9 +56,8 @@ fn main() {
 
     let mut render_context = RenderContext::new(ttf);
 
-    // The default scaling factors we'll apply when rendering
-    let mut scale_x = 4.0;
-    let mut scale_y = 4.0;
+    // The default scaling factor we'll apply when rendering
+    let default_scale = 4.0;
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
@@ -103,10 +102,28 @@ fn main() {
     let mut stupid_ticker = 0;
 
     let keyboard_sink = carboxyl::Sink::new();
-    //let mut keyboard_events = keyboard_sink.stream().events();
+
+    // Let's model the render scale as a signal which changes in response
+    // to events in the keyboard stream:
+    let keyboard_stream = keyboard_sink.stream();
+    let scale_signal = carboxyl::Signal::cyclic(|a| {
+        let my_snap = a.snapshot(&keyboard_stream, |a, keycode| {
+            match keycode {
+                Keycode::RightBracket => a + 0.5,
+                Keycode::LeftBracket => a - 0.5,
+                _ => a
+            }
+        });
+        my_snap.hold(default_scale)
+    });
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
+
+            // XXX: this is only up here because a few of the event cases
+            // below need it, which is a temporary state of affairs.
+            let scale = scale_signal.sample();
+
             match event {
                 Event::Quit{..} |
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
@@ -114,14 +131,6 @@ fn main() {
                 },
                 Event::KeyDown {keycode: Some(Keycode::F), ..} => {
                     show_gui = !show_gui;
-                },
-                Event::KeyDown {keycode: Some(Keycode::RightBracket), ..} => {
-                    scale_x += 0.5;
-                    scale_y += 0.5;
-                },
-                Event::KeyDown {keycode: Some(Keycode::LeftBracket), ..} => {
-                    scale_x -= 0.5;
-                    scale_y -= 0.5;
                 },
                 Event::KeyDown {keycode: Some(code), ..} => {
                     keyboard_sink.send(code);
@@ -132,8 +141,8 @@ fn main() {
                 },
                 Event::MouseMotion {x, y, ..} => {
                     if painting {
-                        let x = (x as f32 / scale_x - off_x as f32) as u32;
-                        let y = (y as f32 / scale_y - off_y as f32) as u32;
+                        let x = (x as f32 / scale - off_x as f32) as u32;
+                        let y = (y as f32 / scale - off_y as f32) as u32;
                         map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
@@ -141,8 +150,8 @@ fn main() {
                     if !show_gui || !tilepicker.click((x, y)) {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
-                        let x = (x as f32 / scale_x - off_x as f32) as u32;
-                        let y = (y as f32 / scale_y - off_y as f32) as u32;
+                        let x = (x as f32 / scale - off_x as f32) as u32;
+                        let y = (y as f32 / scale - off_y as f32) as u32;
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
@@ -182,13 +191,15 @@ fn main() {
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();
 
+        let scale = scale_signal.sample();
+
         {
             let mut world = Scene::new();
             world.add_all(&rendered_map, -1);
             world.add(&rendered_hero, 0);
             world.add(&starman, 0);
             world.present(&mut renderer, &mut render_context,
-                          (off_x, off_y), (scale_x, scale_y));
+                          (off_x, off_y), (scale, scale));
         }
 
         {
@@ -196,7 +207,7 @@ fn main() {
             hud.add_all(&rendered_box, 1);
             hud.add(&hello, 2);
             hud.present_scaled(
-                &mut renderer, &mut render_context, (scale_x, scale_y));
+                &mut renderer, &mut render_context, (scale, scale));
         }
 
         if show_gui {
