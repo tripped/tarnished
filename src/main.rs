@@ -104,7 +104,7 @@ fn main() {
     let keyboard_sink = carboxyl::Sink::new();
 
     // Render scale is a signal changed by accumulated keyboard events
-    let scale_signal = keyboard_sink.stream().fold(4.0, |s, keycode| {
+    let scale_signal = keyboard_sink.stream().fold(default_scale, |s, keycode| {
         match keycode {
             Keycode::RightBracket => s + 0.5,
             Keycode::LeftBracket => s - 0.5,
