@@ -107,14 +107,13 @@ fn main() {
     // to events in the keyboard stream:
     let keyboard_stream = keyboard_sink.stream();
     let scale_signal = carboxyl::Signal::cyclic(|a| {
-        let my_snap = a.snapshot(&keyboard_stream, |a, keycode| {
+        a.snapshot(&keyboard_stream, |a, keycode| {
             match keycode {
                 Keycode::RightBracket => a + 0.5,
                 Keycode::LeftBracket => a - 0.5,
                 _ => a
             }
-        });
-        my_snap.hold(default_scale)
+        }).hold(default_scale)
     });
 
     'mainloop: loop {
