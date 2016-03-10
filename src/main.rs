@@ -3,7 +3,6 @@ extern crate sdl2_ttf;
 extern crate snes_spc;
 extern crate time;
 extern crate rustc_serialize;
-extern crate bincode;
 extern crate carboxyl;
 
 use sdl2::event::Event;

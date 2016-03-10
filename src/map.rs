@@ -4,7 +4,6 @@ use std::io::{Read, Write};
 use std::path::Path;
 
 // XXX: switch to serde
-use bincode::rustc_serialize::{encode, decode};
 use rustc_serialize::{Encodable};
 use rustc_serialize::json;
 
