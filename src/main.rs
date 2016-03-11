@@ -111,12 +111,9 @@ fn main() {
     });
 
     // show_gui is a simple boolean signal that switches on pressing 'F'
-    let show_gui = keyboard_sink.stream().fold(false, |t, keycode| {
-        match keycode {
-            Keycode::F => !t,
-            _ => t
-        }
-    });
+    let show_gui = keyboard_sink.stream()
+        .filter(|k| *k == Keycode::F)
+        .fold(false, |t, _| !t );
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
