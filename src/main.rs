@@ -91,7 +91,6 @@ fn main() {
     // of 960 is actually the full window width. Soon these different spaces
     // should be managed more cleanly.
     let mut tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
-    let mut show_gui = false;
     let mut painting = false;
 
     let mut frames = 0u32;
@@ -111,6 +110,14 @@ fn main() {
         }
     });
 
+    // show_gui is a simple boolean signal that switches on pressing 'F'
+    let show_gui = keyboard_sink.stream().fold(false, |t, keycode| {
+        match keycode {
+            Keycode::F => !t,
+            _ => t
+        }
+    });
+
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
 
@@ -122,9 +129,6 @@ fn main() {
                 Event::Quit{..} |
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                     break 'mainloop
-                },
-                Event::KeyDown {keycode: Some(Keycode::F), ..} => {
-                    show_gui = !show_gui;
                 },
                 Event::KeyDown {keycode: Some(code), ..} => {
                     keyboard_sink.send(code);
@@ -141,7 +145,7 @@ fn main() {
                     }
                 },
                 Event::MouseButtonDown {x, y, ..} => {
-                    if !show_gui || !tilepicker.click((x, y)) {
+                    if !show_gui.sample() || !tilepicker.click((x, y)) {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
                         let x = (x as f32 / scale - off_x as f32) as u32;
@@ -204,7 +208,7 @@ fn main() {
                 &mut renderer, &mut render_context, (scale, scale));
         }
 
-        if show_gui {
+        if show_gui.sample() {
             // This rendering bit is kind of "all wires exposed"; once we
             // figure out a more managed structure for getting Visibles from
             // widget to Scene, this will all look much nicer.
