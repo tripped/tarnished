@@ -91,7 +91,7 @@ impl TilePicker {
                 rects.push(
                     Rectangle::filled(
                         Rect::new_unwrap(
-                            -1 + (i * (w+padding)) as i32, 0,
+                            -(padding as i32) + (i * (w+padding)) as i32, 0,
                             w + 2*padding, h + 2*padding),
                         Color::RGBA(255, 0, 0, 255)));
             }
