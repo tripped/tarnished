@@ -6,6 +6,7 @@ pub struct TilePicker {
     tileset: String,
     tile_width: u32,
     tile_height: u32,
+    scale: f32,
     // widget has total ownership of its position for now
     rect: Rect,
     offset: u32,
@@ -19,6 +20,7 @@ impl TilePicker {
             tileset: tileset.into(),
             tile_width: tile_width,
             tile_height: tile_height,
+            scale: 4.0,
             rect: Rect::new_unwrap(x, y, width, height),
             offset: 0,
             selected: 0,
@@ -44,10 +46,11 @@ impl TilePicker {
             return false;
         }
 
-        let x = x - self.rect.x();
         // Select a new tile
-        // XXX: hardcoded layout bad!
-        self.selected = (x / 65) as u32 + self.offset;
+        let x = x - self.rect.x();
+        // XXX: there has GOT to be a way to avoid these obnoxious casts
+        let dx = (self.tile_width as f32 * self.scale) as i32 + 1;
+        self.selected = (x / dx) as u32 + self.offset;
         return true;
     }
 
@@ -64,7 +67,11 @@ impl TilePicker {
         // have it anyway. Dedup and move when appropriate.
 
         let mut tiles = Vec::new();
-        let (w, h) = (64, 64); // target render dimensions for each tile
+
+        // target render dimensions for each tile
+        // XXX: seriously all this (x as f32 * y) as u32 crap is annoying
+        let (w, h) = ((self.tile_width as f32 * self.scale) as u32,
+                      (self.tile_height as f32 * self.scale) as u32);
         let padding = 1;
 
         let n = self.rect.width() / w;
