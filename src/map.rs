@@ -35,8 +35,7 @@ impl MapLayer {
         let mut f = try!(File::open(path));
         let mut s = String::new();
         try!(f.read_to_string(&mut s));
-        // XXX: really should compose error instead of unwrapping
-        Ok(json::decode(&s).unwrap())
+        json::decode(&s).map_err(|e| io::Error::new(io::ErrorKind::Other, e))
     }
 
     pub fn save<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
