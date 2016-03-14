@@ -42,7 +42,9 @@ fn main() {
     let video = sdl_context.video().unwrap();
     let ttf = sdl2_ttf::init().unwrap();
 
-    let window = video.window("Tarnished", 960, 600)
+    let screen_w = 960;
+    let screen_h = 600;
+    let window = video.window("Tarnished", screen_w, screen_h)
         .position_centered()
         .resizable()
         .build()
@@ -161,6 +163,8 @@ fn main() {
             }
         }
 
+        let scale = scale_signal.sample();
+
         // XXX: this is the jankiest possible way to control timestep.
         // Should probably write a proper game loop next.
         let elapsed = time::precise_time_ns() - start;
@@ -170,8 +174,16 @@ fn main() {
             hero.tick();
 
             // For now, base scene offset on hero's position
-            off_x = -hero.x() + 110;
-            off_y = -hero.y() + 60;
+            // offset = hero position - screen_w / 2
+            // offset is scaled, also inverted???
+            let screen_w = ((screen_w as f32) / scale) as i32;
+            let screen_h = ((screen_h as f32) / scale) as i32;
+            off_x = hero.x() - screen_w/2 + 8;
+            off_y = hero.y() - screen_h/2 + 12;
+
+            // XXX: apparently offsets are inverted in scene rendering
+            off_x = -off_x;
+            off_y = -off_y;
         } else {
             stupid_ticker += dt;
         }
@@ -185,8 +197,6 @@ fn main() {
 
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();
-
-        let scale = scale_signal.sample();
 
         {
             let mut world = Scene::new();
