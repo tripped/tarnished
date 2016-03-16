@@ -173,7 +173,6 @@ fn main() {
             stupid_ticker = 0;
             hero.tick();
 
-            // XXX: don't just unwrap!
             let (screen_w, screen_h) = renderer.window().unwrap().size();
 
             // For now, base scene offset on hero's position
