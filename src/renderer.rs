@@ -119,8 +119,8 @@ impl<'a> Renderer<'a> {
         let tex = context.get_texture(asset, &self.renderer).unwrap();
 
         let (dx, dy) = self.offset;
-        let x = (dst.x() + dx) as i32;
-        let y = (dst.y() + dy) as i32;
+        let x = (dst.x() - dx) as i32;
+        let y = (dst.y() - dy) as i32;
         let w = dst.width();
         let h = dst.height();
         let dst = Rect::new_unwrap(x, y, w, h);

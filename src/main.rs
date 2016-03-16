@@ -182,10 +182,6 @@ fn main() {
             let screen_h = ((screen_h as f32) / scale) as i32;
             off_x = hero.x() - screen_w/2 + 8;
             off_y = hero.y() - screen_h/2 + 12;
-
-            // XXX: apparently offsets are inverted in scene rendering
-            off_x = -off_x;
-            off_y = -off_y;
         } else {
             stupid_ticker += dt;
         }
