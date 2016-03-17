@@ -182,8 +182,6 @@ fn main() {
             let (screen_w, screen_h) = renderer.window().unwrap().size();
 
             // For now, base scene offset on hero's position
-            // offset = hero position - screen_w / 2
-            // offset is scaled, also inverted???
             let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
             let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
             off_x = hero.x() - (screen_w/2) as i32 + 8;
