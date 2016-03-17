@@ -4,6 +4,7 @@ extern crate snes_spc;
 extern crate time;
 extern crate rustc_serialize;
 extern crate carboxyl;
+extern crate num;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -11,6 +12,7 @@ use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
+use num::rational::Ratio;
 
 mod renderer;
 mod scene;
@@ -58,7 +60,7 @@ fn main() {
     let mut render_context = RenderContext::new(ttf);
 
     // The default scaling factor we'll apply when rendering
-    let default_scale = 4.0;
+    let default_scale = Ratio::<u32>::new(4, 1);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
@@ -106,8 +108,8 @@ fn main() {
     // Render scale is a signal changed by accumulated keyboard events
     let scale_signal = keyboard_sink.stream().fold(default_scale, |s, keycode| {
         match keycode {
-            Keycode::RightBracket => s + 0.5,
-            Keycode::LeftBracket => s - 0.5,
+            Keycode::RightBracket => s + Ratio::new(1, 2),
+            Keycode::LeftBracket => s - Ratio::new(1, 2),
             _ => s
         }
     });
@@ -137,18 +139,22 @@ fn main() {
                     hero.key_up();
                 },
                 Event::MouseMotion {x, y, ..} => {
+                    let x = x as u32;
+                    let y = y as u32;
                     if painting {
-                        let x = (x as f32 / scale - off_x as f32) as u32;
-                        let y = (y as f32 / scale - off_y as f32) as u32;
+                        let x = (Ratio::from_integer(x) * scale).to_integer();
+                        let y = (Ratio::from_integer(y) * scale).to_integer();
                         map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui.sample() || !tilepicker.click((x, y)) {
+                        let x = x as u32;
+                        let y = y as u32;
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
-                        let x = (x as f32 / scale - off_x as f32) as u32;
-                        let y = (y as f32 / scale - off_y as f32) as u32;
+                        let x = (Ratio::from_integer(x) * scale).to_integer();
+                        let y = (Ratio::from_integer(y) * scale).to_integer();
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
@@ -178,10 +184,10 @@ fn main() {
             // For now, base scene offset on hero's position
             // offset = hero position - screen_w / 2
             // offset is scaled, also inverted???
-            let screen_w = ((screen_w as f32) / scale) as i32;
-            let screen_h = ((screen_h as f32) / scale) as i32;
-            off_x = hero.x() - screen_w/2 + 8;
-            off_y = hero.y() - screen_h/2 + 12;
+            let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
+            let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
+            off_x = hero.x() - (screen_w/2) as i32 + 8;
+            off_y = hero.y() - (screen_h/2) as i32 + 12;
         } else {
             stupid_ticker += dt;
         }
@@ -195,6 +201,9 @@ fn main() {
 
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();
+
+        // XXX: try to use rationals everywhere!
+        let scale = *scale.numer() as f32 / *scale.denom() as f32;
 
         {
             let mut world = Scene::new();

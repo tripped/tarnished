@@ -3,6 +3,7 @@ name = "tarnished"
 version = "0.1.0"
 dependencies = [
  "carboxyl 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.30 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2_image 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
