@@ -92,23 +92,22 @@ impl RenderContext {
 pub struct Renderer<'a> {
     renderer: &'a mut sdl2::render::Renderer<'static>,
     offset: (i32, i32),
+    original_scale: (f32, f32),
 }
 
 impl<'a> Renderer<'a> {
     /// Create a new Renderer, wrapping an existing SDL Renderer and
     /// setting up drawing for the specified scale and translation.
-    ///
-    /// XXX: currently has the side effect that, even after the new
-    /// object is dropped, the underlying renderer will still have
-    /// its scale modified.
     pub fn new(renderer: &'a mut sdl2::render::Renderer<'static>,
                offset: (i32, i32),
                scale: (f32, f32)) -> Renderer<'a> {
         let (sx, sy) = scale;
+        let original_scale = renderer.scale();
         renderer.set_scale(sx, sy);
         Renderer {
             renderer: renderer,
             offset: offset,
+            original_scale: original_scale,
         }
     }
 
@@ -200,5 +199,13 @@ impl<'a> Renderer<'a> {
     pub fn fill_rect(&mut self, rect: Rect, color: Color) {
         self.renderer.set_draw_color(color);
         self.renderer.fill_rect(rect);
+    }
+}
+
+impl<'a> Drop for Renderer<'a> {
+    fn drop(&mut self) {
+        // Restore the borrowed renderer to its original scale
+        let (sx, sy) = self.original_scale;
+        self.renderer.set_scale(sx, sy);
     }
 }
