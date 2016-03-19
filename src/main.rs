@@ -60,7 +60,7 @@ fn main() {
     let mut render_context = RenderContext::new(ttf);
 
     // The default scaling factor we'll apply when rendering
-    let default_scale = Ratio::<u32>::new(4, 1);
+    let default_scale = Ratio::from_integer(4u32);
 
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
