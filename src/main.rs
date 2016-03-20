@@ -120,12 +120,11 @@ fn main() {
         .fold(false, |t, _| !t );
 
     'mainloop: loop {
+        // XXX: this is only up here because a few of the event cases
+        // below need it, which is a temporary state of affairs.
+        let scale = scale_signal.sample();
+
         for event in sdl_context.event_pump().unwrap().poll_iter() {
-
-            // XXX: this is only up here because a few of the event cases
-            // below need it, which is a temporary state of affairs.
-            let scale = scale_signal.sample();
-
             match event {
                 Event::Quit{..} |
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
@@ -168,8 +167,6 @@ fn main() {
                 _ => { }
             }
         }
-
-        let scale = scale_signal.sample();
 
         // XXX: this is the jankiest possible way to control timestep.
         // Should probably write a proper game loop next.
