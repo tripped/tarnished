@@ -6,6 +6,8 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 
+use num::rational::Ratio;
+
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
 /// to z-ordering, i.e., it is always entirely behind or entirely in front of
 /// other visible objects. Rendering a frame or scene is a process of creating
@@ -71,8 +73,9 @@ impl<'a> Scene<'a> {
     pub fn present(mut self, renderer: &mut sdl2::render::Renderer<'static>,
                    context: &mut RenderContext,
                    translation: (i32, i32),
-                   scale: (f32, f32)) {
-        let mut renderer = Renderer::new(renderer, translation, scale);
+                   scale: Ratio<u32>) {
+        let scale = *scale.numer() as f32 / *scale.denom() as f32;
+        let mut renderer = Renderer::new(renderer, translation, (scale, scale));
         loop {
             match self.elements.pop() {
                 Some(element) => element.object.show(&mut renderer, context),
@@ -84,7 +87,7 @@ impl<'a> Scene<'a> {
     pub fn present_scaled(self,
                           renderer: &mut sdl2::render::Renderer<'static>,
                           context: &mut RenderContext,
-                          scale: (f32, f32)) {
+                          scale: Ratio<u32>) {
         self.present(renderer, context, (0, 0), scale);
     }
 }

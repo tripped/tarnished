@@ -197,24 +197,20 @@ fn main() {
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();
 
-        // XXX: try to use rationals everywhere!
-        let scale = *scale.numer() as f32 / *scale.denom() as f32;
-
         {
             let mut world = Scene::new();
             world.add_all(&rendered_map, -1);
             world.add(&rendered_hero, 0);
             world.add(&starman, 0);
             world.present(&mut renderer, &mut render_context,
-                          (off_x, off_y), (scale, scale));
+                          (off_x, off_y), scale);
         }
 
         {
             let mut hud = Scene::new();
             hud.add_all(&rendered_box, 1);
             hud.add(&hello, 2);
-            hud.present_scaled(
-                &mut renderer, &mut render_context, (scale, scale));
+            hud.present_scaled(&mut renderer, &mut render_context, scale);
         }
 
         if show_gui.sample() {
@@ -225,7 +221,8 @@ fn main() {
             let mut gui = Scene::new();
             gui.add_all(&rects, 0);
             gui.add_all(&tiles, 1);
-            gui.present(&mut renderer, &mut render_context, (0, 0), (1.0, 1.0));
+            gui.present(&mut renderer, &mut render_context, (0, 0),
+                Ratio::from_integer(1));
         }
 
         renderer.present();
