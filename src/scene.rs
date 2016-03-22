@@ -74,8 +74,7 @@ impl<'a> Scene<'a> {
                    context: &mut RenderContext,
                    translation: (i32, i32),
                    scale: Ratio<u32>) {
-        let scale = *scale.numer() as f32 / *scale.denom() as f32;
-        let mut renderer = Renderer::new(renderer, translation, (scale, scale));
+        let mut renderer = Renderer::new(renderer, translation, scale);
         loop {
             match self.elements.pop() {
                 Some(element) => element.object.show(&mut renderer, context),

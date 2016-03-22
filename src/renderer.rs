@@ -9,6 +9,7 @@ use self::sdl2::pixels::Color;
 use self::sdl2::rect::Rect;
 use self::sdl2::render::{Texture, TextureQuery};
 use self::sdl2_image::LoadTexture;
+use num::rational::Ratio;
 
 /// Specifies a draw rect's horizontal position and alignment
 #[derive(Copy, Clone)]
@@ -100,10 +101,10 @@ impl<'a> Renderer<'a> {
     /// setting up drawing for the specified scale and translation.
     pub fn new(renderer: &'a mut sdl2::render::Renderer<'static>,
                offset: (i32, i32),
-               scale: (f32, f32)) -> Renderer<'a> {
-        let (sx, sy) = scale;
+               scale: Ratio<u32>) -> Renderer<'a> {
+        let scale = *scale.numer() as f32 / *scale.denom() as f32;
         let original_scale = renderer.scale();
-        renderer.set_scale(sx, sy);
+        renderer.set_scale(scale, scale);
         Renderer {
             renderer: renderer,
             offset: offset,
