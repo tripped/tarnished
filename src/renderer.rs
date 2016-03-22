@@ -1,14 +1,12 @@
-extern crate sdl2;
-extern crate sdl2_image;
-extern crate sdl2_ttf;
-
 use std::collections::HashMap;
 use std::path::Path;
 
-use self::sdl2::pixels::Color;
-use self::sdl2::rect::Rect;
-use self::sdl2::render::{Texture, TextureQuery};
-use self::sdl2_image::LoadTexture;
+use sdl2;
+use sdl2_ttf;
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
+use sdl2::render::{Texture, TextureQuery};
+use sdl2_image::LoadTexture;
 use num::rational::Ratio;
 
 /// Specifies a draw rect's horizontal position and alignment
