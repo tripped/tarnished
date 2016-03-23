@@ -104,6 +104,9 @@ fn main() {
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100);
     let mut stupid_ticker = 0;
 
+    // The one sink for all SDL events.
+    let sdl_sink = carboxyl::Sink::new();
+
     let keyboard_sink = carboxyl::Sink::new();
 
     // Render scale is a signal changed by accumulated keyboard events
@@ -167,6 +170,8 @@ fn main() {
                 },
                 _ => { }
             }
+
+            sdl_sink.send(event);
         }
 
         // XXX: this is the jankiest possible way to control timestep.
