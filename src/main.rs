@@ -107,10 +107,25 @@ fn main() {
     // The one sink for all SDL events.
     let sdl_sink = carboxyl::Sink::new();
 
-    let keyboard_sink = carboxyl::Sink::new();
+    // A Stream consisting of all key-up and key-down events
+    let keyboard_stream = sdl_sink.stream().filter(|event| {
+        match *event {
+            Event::KeyDown {..} | Event::KeyUp {..} => true,
+            _ => false
+        }
+    });
+
+    // A Stream consisting of just key-down events
+    // XXX: temporary, just used by scale and show_gui signals
+    let keydown_stream = keyboard_stream.filter_map(|event| {
+        match event {
+            Event::KeyDown {keycode, ..} => keycode,
+            _ => None
+        }
+    });
 
     // Render scale is a signal changed by accumulated keyboard events
-    let scale_signal = keyboard_sink.stream().fold(default_scale, |s, keycode| {
+    let scale_signal = keydown_stream.fold(default_scale, |s, keycode| {
         match keycode {
             Keycode::RightBracket => s + Ratio::new(1, 2),
             Keycode::LeftBracket => s - Ratio::new(1, 2),
@@ -119,7 +134,7 @@ fn main() {
     });
 
     // show_gui is a simple boolean signal that switches on pressing 'F'
-    let show_gui = keyboard_sink.stream()
+    let show_gui = keydown_stream
         .filter(|k| *k == Keycode::F)
         .fold(false, |t, _| !t );
 
@@ -135,7 +150,6 @@ fn main() {
                     break 'mainloop
                 },
                 Event::KeyDown {keycode: Some(code), ..} => {
-                    keyboard_sink.send(code);
                     hero.key_down(code);
                 },
                 Event::KeyUp {..} => {
