@@ -11,27 +11,6 @@ pub enum Direction {
     Right,
 }
 
-pub enum State {
-    Walking,
-    Resting,
-}
-
-pub struct Brobot {
-    asset: String,
-    w: u32,
-    h: u32,
-    x: i32,
-    y: i32,
-    state: State,
-    direction: carboxyl::Signal<Direction>,
-    time: u32,
-    step: u32,
-    // XXX: really need a better way to represent movement speed at these
-    // small discrete pixel scales. It's probably okay to just use floats
-    // internally and alias.
-    freq: u32,
-}
-
 /// A radically free struct that is capable of representing the desire to move
 /// in every direction at once.
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -78,6 +57,22 @@ fn samsara(impulse: Impulse, event: Event) -> Impulse {
     }
 }
 
+pub struct Brobot {
+    asset: String,
+    w: u32,
+    h: u32,
+    x: i32,
+    y: i32,
+    impulse: carboxyl::Signal<Impulse>,
+    direction: carboxyl::Signal<Direction>,
+    time: u32,
+    step: u32,
+    // XXX: really need a better way to represent movement speed at these
+    // small discrete pixel scales. It's probably okay to just use floats
+    // internally and alias.
+    freq: u32,
+}
+
 impl Brobot {
     pub fn new(asset: &str, w: u32, h: u32, x: i32, y: i32,
                keyboard: carboxyl::Stream<Event>) -> Brobot {
@@ -109,7 +104,7 @@ impl Brobot {
         Brobot {
             asset: asset.into(),
             w: w, h: h, x: x, y: y,
-            state: State::Resting,
+            impulse: impulse,
             direction: direction,
             time: 0,
             step: 30,
@@ -120,30 +115,6 @@ impl Brobot {
     pub fn x(&self) -> i32 { self.x }
     pub fn y(&self) -> i32 { self.y }
 
-    // XXX: just wiring through the keyboard event is kinda crap. This should
-    // be using FRP! This is just a temporary measure, I promise.
-    pub fn key_down(&mut self, code: Keycode) {
-        match code {
-            Keycode::Up => {
-                self.state = State::Walking;
-            },
-            Keycode::Down => {
-                self.state = State::Walking;
-            },
-            Keycode::Left => {
-                self.state = State::Walking;
-            },
-            Keycode::Right => {
-                self.state = State::Walking;
-            },
-            _ => {}
-        }
-    }
-
-    pub fn key_up(&mut self) {
-        self.state = State::Resting;
-    }
-
     pub fn tick(&mut self) {
         self.time += 1;
 
@@ -151,22 +122,19 @@ impl Brobot {
             return;
         }
 
-        match self.state {
-            State::Walking => match self.direction.sample() {
-                Direction::Left => {
-                    self.x -= 1;
-                },
-                Direction::Right => {
-                    self.x += 1;
-                },
-                Direction::Up => {
-                    self.y -= 1;
-                },
-                Direction::Down => {
-                    self.y += 1;
-                }
-            },
-            _ => {}
+        let impulse = self.impulse.sample();
+
+        if impulse.left {
+            self.x -= 1;
+        }
+        if impulse.right {
+            self.x += 1;
+        }
+        if impulse.up {
+            self.y -= 1;
+        }
+        if impulse.down {
+            self.y += 1;
         }
     }
 
@@ -179,13 +147,12 @@ impl Brobot {
         };
 
         // If walking, use the step-up frame every so often
-        // XXX: should probably be part of tick(), or take freq into account
-        match self.state {
-            State::Walking => if (self.time / self.step) % 2 == 0 {
+        // XXX: should be its own signal, which means we will need time
+        if self.impulse.sample() != Impulse::nirvana() {
+            if (self.time / self.step) % 2 == 0 {
                 // XXX: hardcoded frame offsets = gross
                 frame += 4;
-            },
-            _ => {}
+            }
         }
 
         Tile::new(&self.asset, frame, self.w, self.h, self.x, self.y)

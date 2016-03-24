@@ -152,12 +152,6 @@ fn main() {
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                     break 'mainloop
                 },
-                Event::KeyDown {keycode: Some(code), ..} => {
-                    hero.key_down(code);
-                },
-                Event::KeyUp {..} => {
-                    hero.key_up();
-                },
                 Event::MouseMotion {x, y, ..} => {
                     let x = x as u32;
                     let y = y as u32;
