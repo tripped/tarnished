@@ -93,9 +93,9 @@ impl Brobot {
             let stronger = if b == Impulse::nirvana() { a } else { b };
             match stronger {
                 Impulse { down: true, .. } => Direction::Down,
+                Impulse { up: true, .. } => Direction::Up,
                 Impulse { left: true, .. } => Direction::Left,
                 Impulse { right: true, .. } => Direction::Right,
-                Impulse { up: true, .. } => Direction::Up,
                 _ => Direction::Down  // XXX: should have Direction::Mu
             }
         }
