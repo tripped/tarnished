@@ -101,9 +101,6 @@ fn main() {
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
-    let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100);
-    let mut stupid_ticker = 0;
-
     // The one sink for all SDL events.
     let sdl_sink = carboxyl::Sink::new();
 
@@ -114,6 +111,11 @@ fn main() {
             _ => false
         }
     });
+
+    let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
+                               keyboard_stream.clone());
+    let mut stupid_ticker = 0;
+
 
     // A Stream consisting of just key-down events
     // XXX: temporary, just used by scale and show_gui signals
