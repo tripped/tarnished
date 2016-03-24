@@ -16,16 +16,6 @@ pub enum State {
     Resting,
 }
 
-// What do: state will go away.
-// direction and velocity will become signals.
-// we'll keep x,y just for now and update them each tick as before.
-// Ah, for key events we want both up and down... is it reasonable
-// for those to both be in one stream? alternatively, could the
-// keyboard *state* be a signal? Hrm. decisions.
-// Actually. The one single thing that makes the most sense as a first step.
-// Put *all* the sdl events into one stream. Then we can filter as needed.
-// It's the principle of least-intrusive abstraction first.
-
 pub struct Brobot {
     asset: String,
     w: u32,
