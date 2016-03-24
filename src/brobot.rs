@@ -34,7 +34,7 @@ pub struct Brobot {
 
 /// A radically free struct that is capable of representing the desire to move
 /// in every direction at once.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 struct Impulse {
     left: bool,
     up: bool,
@@ -84,16 +84,27 @@ impl Brobot {
         // First, transform keyboard events into a time-varying impulse signal
         let impulse = keyboard.fold(Impulse::nirvana(), samsara);
 
-        // One's direction in life is a map of their impulses
-        let direction = impulse.map(|impulse| {
-            match impulse {
+        // In addition to where we want to move, we must compute our facing
+        // direction. This is a function not just of current impulse, but
+        // also of previous impulse when impulse is zero. Thus, we will
+        // generate another signal which holds the prior impulse. We call
+        // this quantity "whimsy."
+        let whimsy = impulse.snapshot(&keyboard, |i, _| i)
+            .hold(Impulse::nirvana());
+
+        // Finally, facing direction is computed by lifting an introspective
+        // function over whimsy and impulse.
+        fn decisiveness(a: Impulse, b: Impulse) -> Direction {
+            let stronger = if b == Impulse::nirvana() { a } else { b };
+            match stronger {
                 Impulse { down: true, .. } => Direction::Down,
                 Impulse { left: true, .. } => Direction::Left,
                 Impulse { right: true, .. } => Direction::Right,
                 Impulse { up: true, .. } => Direction::Up,
-                _ => Direction::Down
+                _ => Direction::Down  // XXX: should have Direction::Mu
             }
-        });
+        }
+        let direction = lift!(decisiveness, &whimsy, &impulse);
 
         Brobot {
             asset: asset.into(),

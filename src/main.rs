@@ -4,6 +4,7 @@ extern crate sdl2_ttf;
 extern crate snes_spc;
 extern crate time;
 extern crate rustc_serialize;
+#[macro_use(lift)]
 extern crate carboxyl;
 extern crate num;
 
