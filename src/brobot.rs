@@ -1,7 +1,7 @@
 use scene::Tile;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use carboxyl;
+use carboxyl::{Signal, Stream};
 
 #[derive(Copy, Clone)]
 pub enum Direction {
@@ -63,8 +63,8 @@ pub struct Brobot {
     h: u32,
     x: i32,
     y: i32,
-    impulse: carboxyl::Signal<Impulse>,
-    direction: carboxyl::Signal<Direction>,
+    impulse: Signal<Impulse>,
+    direction: Signal<Direction>,
     time: u32,
     step: u32,
     // XXX: really need a better way to represent movement speed at these
@@ -75,7 +75,7 @@ pub struct Brobot {
 
 impl Brobot {
     pub fn new(asset: &str, w: u32, h: u32, x: i32, y: i32,
-               keyboard: carboxyl::Stream<Event>) -> Brobot {
+               keyboard: Stream<Event>) -> Brobot {
         // First, transform keyboard events into a time-varying impulse signal
         let impulse = keyboard.fold(Impulse::nirvana(), samsara);
 
