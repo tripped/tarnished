@@ -15,6 +15,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use snes_spc::SnesSpc;
 use num::rational::Ratio;
+use carboxyl::Sink;
 
 mod renderer;
 mod scene;
@@ -103,7 +104,7 @@ fn main() {
     let start = time::precise_time_ns();
 
     // The one sink for all SDL events.
-    let sdl_sink = carboxyl::Sink::new();
+    let sdl_sink = Sink::new();
 
     // A Stream consisting of all key-up and key-down events
     let keyboard_stream = sdl_sink.stream().filter(|event| {
@@ -114,7 +115,7 @@ fn main() {
     });
 
     // A Stream consisting of time-delta events
-    let time_sink = carboxyl::Sink::new();
+    let time_sink = Sink::new();
     let time = time_sink.stream();
 
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
