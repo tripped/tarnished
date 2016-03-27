@@ -113,6 +113,10 @@ fn main() {
         }
     });
 
+    // A Stream consisting of time-delta events
+    let time_sink = carboxyl::Sink::new();
+    let time = time_sink.stream();
+
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
                                keyboard_stream.clone());
     let mut stupid_ticker = 0;
@@ -193,6 +197,10 @@ fn main() {
             stupid_ticker = 0;
             hero.tick();
 
+            // XXX: again, this is a sloppy fixed timestep
+            time_sink.send(1.0/60.0);
+
+            // XXX: screen position should be a signal!
             let (screen_w, screen_h) = renderer.window().unwrap().size();
 
             // For now, base scene offset on hero's position
