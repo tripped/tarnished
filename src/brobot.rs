@@ -61,10 +61,9 @@ pub struct Brobot {
     asset: String,
     w: u32,
     h: u32,
-    x: i32,
-    y: i32,
     impulse: Signal<Impulse>,
     direction: Signal<Direction>,
+    position: Signal<(f32, f32)>,
     time: u32,
     step: u32,
     // XXX: really need a better way to represent movement speed at these
@@ -75,7 +74,8 @@ pub struct Brobot {
 
 impl Brobot {
     pub fn new(asset: &str, w: u32, h: u32, x: i32, y: i32,
-               keyboard: Stream<Event>) -> Brobot {
+               keyboard: Stream<Event>,
+               time: Stream<f32>) -> Brobot {
         // First, transform keyboard events into a time-varying impulse signal
         let impulse = keyboard.fold(Impulse::nirvana(), samsara);
 
@@ -101,40 +101,57 @@ impl Brobot {
         }
         let direction = lift!(decisiveness, &whimsy, &impulse);
 
+        // Now, actual position can be represented as a cyclic signal
+        // folding impulse over time.
+        // XXX: this should actually make use of dt!
+        // XXX: the fold function samples the impulse signal. That's obviously
+        // rather impure! Perhaps this should be a fold over a combined stream
+        // containing keyboard and time signals..?
+        let initial_position = (x as f32, y as f32);
+
+        let position = {
+            let impulse = impulse.clone();
+            time.fold(initial_position, move |pos, dt| {
+                let impulse = impulse.sample();
+                let (mut x, mut y) = pos;
+                if impulse.left {
+                    x -= 0.5;
+                }
+                if impulse.right {
+                    x += 0.5;
+                }
+                if impulse.up {
+                    y -= 0.5;
+                }
+                if impulse.down {
+                    y += 0.5;
+                }
+                (x, y)
+            })
+        };
+
         Brobot {
             asset: asset.into(),
-            w: w, h: h, x: x, y: y,
+            w: w, h: h,
             impulse: impulse,
             direction: direction,
+            position: position,
             time: 0,
             step: 30,
             freq: 2
         }
     }
 
-    pub fn x(&self) -> i32 { self.x }
-    pub fn y(&self) -> i32 { self.y }
+    pub fn position(&self) -> (i32, i32) {
+        let (x, y) = self.position.sample();
+        (x as i32, y as i32)
+    }
 
     pub fn tick(&mut self) {
         self.time += 1;
 
         if self.time % self.freq != 0 {
             return;
-        }
-
-        let impulse = self.impulse.sample();
-
-        if impulse.left {
-            self.x -= 1;
-        }
-        if impulse.right {
-            self.x += 1;
-        }
-        if impulse.up {
-            self.y -= 1;
-        }
-        if impulse.down {
-            self.y += 1;
         }
     }
 
@@ -155,6 +172,7 @@ impl Brobot {
             }
         }
 
-        Tile::new(&self.asset, frame, self.w, self.h, self.x, self.y)
+        let (x, y) = self.position.sample();
+        Tile::new(&self.asset, frame, self.w, self.h, x as i32, y as i32)
     }
 }

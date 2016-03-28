@@ -116,10 +116,10 @@ fn main() {
 
     // A Stream consisting of time-delta events
     let time_sink = Sink::new();
-    let time = time_sink.stream();
 
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
-                               keyboard_stream.clone());
+                               keyboard_stream.clone(),
+                               time_sink.stream());
     let mut stupid_ticker = 0;
 
 
@@ -207,8 +207,9 @@ fn main() {
             // For now, base scene offset on hero's position
             let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
             let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
-            off_x = hero.x() - (screen_w/2) as i32 + 8;
-            off_y = hero.y() - (screen_h/2) as i32 + 12;
+            let (hero_x, hero_y) = hero.position();
+            off_x = hero_x - (screen_w/2) as i32 + 8;
+            off_y = hero_y - (screen_h/2) as i32 + 12;
         } else {
             stupid_ticker += dt;
         }
