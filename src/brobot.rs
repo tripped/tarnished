@@ -108,6 +108,7 @@ impl Brobot {
         // rather impure! Perhaps this should be a fold over a combined stream
         // containing keyboard and time signals..?
         let initial_position = (x as f32, y as f32);
+        let speed = 42.0;
 
         let position = {
             let impulse = impulse.clone();
@@ -115,16 +116,16 @@ impl Brobot {
                 let impulse = impulse.sample();
                 let (mut x, mut y) = pos;
                 if impulse.left {
-                    x -= 0.5;
+                    x -= dt * speed;
                 }
                 if impulse.right {
-                    x += 0.5;
+                    x += dt * speed;
                 }
                 if impulse.up {
-                    y -= 0.5;
+                    y -= dt * speed;
                 }
                 if impulse.down {
-                    y += 0.5;
+                    y += dt * speed;
                 }
                 (x, y)
             })
