@@ -103,7 +103,6 @@ impl Brobot {
 
         // Now, actual position can be represented as a cyclic signal
         // folding impulse over time.
-        // XXX: this should actually make use of dt!
         // XXX: the fold function samples the impulse signal. That's obviously
         // rather impure! Perhaps this should be a fold over a combined stream
         // containing keyboard and time signals..?
