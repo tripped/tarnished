@@ -142,9 +142,8 @@ impl Brobot {
         }
     }
 
-    pub fn position(&self) -> (i32, i32) {
-        let (x, y) = self.position.sample();
-        (x as i32, y as i32)
+    pub fn position(&self) -> &Signal<(f32, f32)> {
+        &self.position
     }
 
     pub fn tick(&mut self) {

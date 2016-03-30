@@ -83,8 +83,6 @@ fn main() {
     audio.resume();
 
     // Draw some stuff
-    let (mut off_x, mut off_y) = (0, 0);
-
     let starman = sprite("assets/starmanjr",
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
@@ -122,7 +120,6 @@ fn main() {
                                time_sink.stream());
     let mut stupid_ticker = 0;
 
-
     // A Stream consisting of just key-down events
     // XXX: temporary, just used by scale and show_gui signals
     let keydown_stream = keyboard_stream.filter_map(|event| {
@@ -140,6 +137,16 @@ fn main() {
             _ => s
         }
     });
+
+    // Screen position is determined by hero position and scale
+    // XXX: (Also by screen size, but we'll move this to a signal as well later
+    let (screen_w, screen_h) = renderer.window().unwrap().size();
+    let screen_pos = lift!(move |scale, (hero_x, hero_y)| {
+        let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
+        let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
+        (hero_x as i32 - (screen_w/2) as i32 + 8,
+         hero_y as i32 - (screen_h/2) as i32 + 12)
+    }, &scale_signal, hero.position());
 
     // show_gui is a simple boolean signal that switches on pressing 'F'
     let show_gui = keydown_stream
@@ -197,19 +204,7 @@ fn main() {
         if stupid_ticker > 16666666 {
             stupid_ticker = 0;
             hero.tick();
-
-            // XXX: again, this is a sloppy fixed timestep
             time_sink.send(1.0/60.0);
-
-            // XXX: screen position should be a signal!
-            let (screen_w, screen_h) = renderer.window().unwrap().size();
-
-            // For now, base scene offset on hero's position
-            let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
-            let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
-            let (hero_x, hero_y) = hero.position();
-            off_x = hero_x - (screen_w/2) as i32 + 8;
-            off_y = hero_y - (screen_h/2) as i32 + 12;
         } else {
             stupid_ticker += dt;
         }
@@ -230,7 +225,7 @@ fn main() {
             world.add(&rendered_hero, 0);
             world.add(&starman, 0);
             world.present(&mut renderer, &mut render_context,
-                          (off_x, off_y), scale);
+                          screen_pos.sample(), scale);
         }
 
         {
