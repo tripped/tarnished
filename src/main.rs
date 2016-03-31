@@ -8,7 +8,7 @@ extern crate rustc_serialize;
 extern crate carboxyl;
 extern crate num;
 
-use std::cmp::max;
+use std::cmp::{min, max};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
@@ -133,8 +133,9 @@ fn main() {
     // Render scale is a signal changed by accumulated keyboard events
     let scale_signal = keydown_stream.fold(default_scale, |s, keycode| {
         let min_scale = Ratio::new(1, 2);
+        let joe_factor = Ratio::from_integer(8);
         match keycode {
-            Keycode::RightBracket => s + Ratio::new(1, 2),
+            Keycode::RightBracket => min(joe_factor, s + Ratio::new(1, 2)),
             Keycode::LeftBracket => max(min_scale, s - Ratio::new(1, 2)),
             _ => s
         }
