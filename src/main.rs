@@ -113,12 +113,15 @@ fn main() {
         }
     });
 
-    // A Stream consisting of time-delta events
-    let time_sink = Sink::new();
+    // Shove time deltas in here...
+    let delta_sink = Sink::new();
+
+    // ...the current time comes out here.
+    let time = delta_sink.stream().fold(0.0, |a, b| a + b);
 
     let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
                                keyboard_stream.clone(),
-                               time_sink.stream());
+                               delta_sink.stream());
     let mut stupid_ticker = 0;
 
     // A Stream consisting of just key-down events
@@ -207,7 +210,7 @@ fn main() {
         if stupid_ticker > 16666666 {
             stupid_ticker = 0;
             hero.tick();
-            time_sink.send(1.0/60.0);
+            delta_sink.send(1.0/60.0);
         } else {
             stupid_ticker += dt;
         }
