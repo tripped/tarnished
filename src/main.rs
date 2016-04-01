@@ -119,7 +119,7 @@ fn main() {
     // ...the current time comes out here.
     let time = delta_sink.stream().fold(0.0, |a, b| a + b);
 
-    let mut hero = Brobot::new("assets/hero", 16, 24, 85, 100,
+    let mut hero = Brobot::new("assets/porky", 16, 24, 85, 100,
                                keyboard_stream.clone(),
                                delta_sink.stream());
     let mut stupid_ticker = 0;
