@@ -159,7 +159,4 @@ impl Brobot {
     pub fn renderer(&self) -> &Signal<Tile> {
         &self.render
     }
-
-    pub fn tick(&mut self) {
-    }
 }

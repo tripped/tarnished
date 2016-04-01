@@ -119,7 +119,7 @@ fn main() {
     // ...the current time comes out here.
     let time = delta_sink.stream().fold(0.0, |a, b| a + b);
 
-    let mut hero = Brobot::new("assets/porky", 16, 24, 85, 100,
+    let hero = Brobot::new("assets/porky", 16, 24, 85, 100,
                                keyboard_stream.clone(),
                                time.clone(),
                                delta_sink.stream());
@@ -210,7 +210,6 @@ fn main() {
         let dt = elapsed - stupid_ticker;
         if stupid_ticker > 16666666 {
             stupid_ticker = 0;
-            hero.tick();
             delta_sink.send(1.0/60.0);
         } else {
             stupid_ticker += dt;
