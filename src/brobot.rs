@@ -131,6 +131,7 @@ impl Brobot {
         // Finally, we can describe presentation in terms of time, impulse,
         // direction, and position.
         let render = {
+            let steps_per_second = 5.0;
             let asset = asset.to_string();
             lift!(move |time, impulse, direction, position| {
                 let mut frame = match direction {
@@ -140,12 +141,12 @@ impl Brobot {
                     Direction::Right => 3
                 };
 
-                /*if impulse != Impulse::nirvana() {
-                    if (self.time / self.step) % 2 == 0 {
+                if impulse != Impulse::nirvana() {
+                    if (time * steps_per_second).sin() > 0.0 {
                         // XXX: hardcoded frame offsets = gross
                         frame += 4;
                     }
-                }*/
+                }
                 let (x, y) = position;
                 Tile::new(&asset, frame, w, h, x as i32, y as i32)
             },
