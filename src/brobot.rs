@@ -71,7 +71,7 @@ pub struct Brobot {
 impl Brobot {
     pub fn new(asset: &str, w: u32, h: u32, x: i32, y: i32,
                keyboard: Stream<Event>,
-               time: Stream<f32>) -> Brobot {
+               time_delta: Stream<f32>) -> Brobot {
         // First, transform keyboard events into a time-varying impulse signal
         let impulse = keyboard.fold(Impulse::nirvana(), samsara);
 
@@ -107,7 +107,7 @@ impl Brobot {
 
         let position = {
             let impulse = impulse.clone();
-            time.fold(initial_position, move |pos, dt| {
+            time_delta.fold(initial_position, move |pos, dt| {
                 let impulse = impulse.sample();
                 let (mut x, mut y) = pos;
                 if impulse.left {
