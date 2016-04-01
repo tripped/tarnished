@@ -221,7 +221,7 @@ fn main() {
         // is perhaps an API weakness; might end up just boxing visibles.
         let rendered_box = textbox.render();
         let rendered_map = map.render();
-        let rendered_hero = hero.render();
+        let rendered_hero = hero.renderer().sample();
 
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();

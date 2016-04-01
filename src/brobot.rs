@@ -64,6 +64,7 @@ pub struct Brobot {
     impulse: Signal<Impulse>,
     direction: Signal<Direction>,
     position: Signal<(f32, f32)>,
+    render: Signal<Tile>,
     time: u32,
     step: u32,
 }
@@ -148,7 +149,7 @@ impl Brobot {
                 let (x, y) = position;
                 Tile::new(&asset, frame, w, h, x as i32, y as i32)
             },
-            &time, &impulse, &direction, &position);
+            &time, &impulse, &direction, &position)
         };
 
         Brobot {
@@ -157,6 +158,7 @@ impl Brobot {
             impulse: impulse,
             direction: direction,
             position: position,
+            render: render,
             time: 0,
             step: 30,
         }
@@ -164,6 +166,10 @@ impl Brobot {
 
     pub fn position(&self) -> &Signal<(f32, f32)> {
         &self.position
+    }
+
+    pub fn renderer(&self) -> &Signal<Tile> {
+        &self.render
     }
 
     pub fn tick(&mut self) {
