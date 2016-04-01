@@ -148,10 +148,6 @@ impl Brobot {
 
     pub fn tick(&mut self) {
         self.time += 1;
-
-        if self.time % self.freq != 0 {
-            return;
-        }
     }
 
     pub fn render(&self) -> Tile {
