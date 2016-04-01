@@ -1,0 +1,24 @@
+Some short-term goals
+---------------------
+
+1. Introduce an input event abstraction
+
+Currently we just dump SDL events directly into a stream; we should create
+an enumeration that gathers together various things we care about putting
+into the network, so they can be present in the same stream. E.g.,
+    * Keyboard input
+    * Mouse movement / clicks
+    * Time deltas?
+
+XXX: not sure about including time deltas there; we'd prefer to not use
+deltas for anything except generating the timestream.
+
+
+2. Move editor GUI to a separate module
+
+Create an interface that just exposes the relevant streams and signals;
+should allow a fairly elegant decoupling of GUI from the main loop. Probably
+depends on #1, or at least having mouse events in carboxyl.
+
+
+3. Move audio to a separate module, add basic mixing interface
