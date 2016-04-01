@@ -58,15 +58,8 @@ fn samsara(impulse: Impulse, event: Event) -> Impulse {
 }
 
 pub struct Brobot {
-    asset: String,
-    w: u32,
-    h: u32,
-    impulse: Signal<Impulse>,
-    direction: Signal<Direction>,
     position: Signal<(f32, f32)>,
     render: Signal<Tile>,
-    time: u32,
-    step: u32,
 }
 
 impl Brobot {
@@ -154,14 +147,8 @@ impl Brobot {
         };
 
         Brobot {
-            asset: asset.into(),
-            w: w, h: h,
-            impulse: impulse,
-            direction: direction,
             position: position,
             render: render,
-            time: 0,
-            step: 30,
         }
     }
 
@@ -174,27 +161,5 @@ impl Brobot {
     }
 
     pub fn tick(&mut self) {
-        self.time += 1;
-    }
-
-    pub fn render(&self) -> Tile {
-        let mut frame = match self.direction.sample() {
-            Direction::Down => 0,
-            Direction::Left => 1,
-            Direction::Up => 2,
-            Direction::Right => 3
-        };
-
-        // If walking, use the step-up frame every so often
-        // XXX: should be its own signal, which means we will need time
-        if self.impulse.sample() != Impulse::nirvana() {
-            if (self.time / self.step) % 2 == 0 {
-                // XXX: hardcoded frame offsets = gross
-                frame += 4;
-            }
-        }
-
-        let (x, y) = self.position.sample();
-        Tile::new(&self.asset, frame, self.w, self.h, x as i32, y as i32)
     }
 }
