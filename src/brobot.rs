@@ -66,10 +66,6 @@ pub struct Brobot {
     position: Signal<(f32, f32)>,
     time: u32,
     step: u32,
-    // XXX: really need a better way to represent movement speed at these
-    // small discrete pixel scales. It's probably okay to just use floats
-    // internally and alias.
-    freq: u32,
 }
 
 impl Brobot {
@@ -138,7 +134,6 @@ impl Brobot {
             position: position,
             time: 0,
             step: 30,
-            freq: 2
         }
     }
 
