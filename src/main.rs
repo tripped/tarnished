@@ -121,6 +121,7 @@ fn main() {
 
     let mut hero = Brobot::new("assets/porky", 16, 24, 85, 100,
                                keyboard_stream.clone(),
+                               time.clone(),
                                delta_sink.stream());
     let mut stupid_ticker = 0;
 

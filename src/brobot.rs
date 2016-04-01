@@ -71,6 +71,7 @@ pub struct Brobot {
 impl Brobot {
     pub fn new(asset: &str, w: u32, h: u32, x: i32, y: i32,
                keyboard: Stream<Event>,
+               time: Signal<f32>,
                time_delta: Stream<f32>) -> Brobot {
         // First, transform keyboard events into a time-varying impulse signal
         let impulse = keyboard.fold(Impulse::nirvana(), samsara);
@@ -124,6 +125,30 @@ impl Brobot {
                 }
                 (x, y)
             })
+        };
+
+        // Finally, we can describe presentation in terms of time, impulse,
+        // direction, and position.
+        let render = {
+            let asset = asset.to_string();
+            lift!(move |time, impulse, direction, position| {
+                let mut frame = match direction {
+                    Direction::Down => 0,
+                    Direction::Left => 1,
+                    Direction::Up => 2,
+                    Direction::Right => 3
+                };
+
+                /*if impulse != Impulse::nirvana() {
+                    if (self.time / self.step) % 2 == 0 {
+                        // XXX: hardcoded frame offsets = gross
+                        frame += 4;
+                    }
+                }*/
+                let (x, y) = position;
+                Tile::new(&asset, frame, w, h, x as i32, y as i32)
+            },
+            &time, &impulse, &direction, &position);
         };
 
         Brobot {

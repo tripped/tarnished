@@ -148,6 +148,7 @@ impl Visible for Sprite {
 }
 
 /// A Visible object that is a tile drawn from a tileset.
+#[derive(Clone)]
 pub struct Tile {
     tileset: String,
     tile: u32,
