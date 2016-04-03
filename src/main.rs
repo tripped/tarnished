@@ -30,7 +30,7 @@ use renderer::{RenderContext, HPos, VPos};
 use textbox::Textbox;
 use tilepicker::TilePicker;
 use map::MapLayer;
-use brobot::{Brobot};
+use brobot::controlled_sprite;
 
 struct SpcPlayer {
     emulator: SnesSpc
@@ -119,10 +119,9 @@ fn main() {
     // ...the current time comes out here.
     let time = delta_sink.stream().fold(0.0, |a, b| a + b);
 
-    let hero = Brobot::new("assets/porky", 16, 24, 85, 100,
-                               keyboard_stream.clone(),
-                               time.clone(),
-                               delta_sink.stream());
+    let (hero_pos, hero_display) = controlled_sprite(
+        "assets/porky", 16, 24, 85, 100,
+        keyboard_stream.clone(), time.clone(), delta_sink.stream());
     let mut stupid_ticker = 0;
 
     // A Stream consisting of just key-down events
@@ -153,7 +152,7 @@ fn main() {
         let screen_h = (Ratio::from_integer(screen_h) / scale).to_integer();
         (hero_x as i32 - (screen_w/2) as i32 + 8,
          hero_y as i32 - (screen_h/2) as i32 + 12)
-    }, &scale_signal, hero.position());
+    }, &scale_signal, &hero_pos);
 
     // show_gui is a simple boolean signal that switches on pressing 'F'
     let show_gui = keydown_stream
@@ -220,7 +219,7 @@ fn main() {
         // is perhaps an API weakness; might end up just boxing visibles.
         let rendered_box = textbox.render();
         let rendered_map = map.render();
-        let rendered_hero = hero.renderer().sample();
+        let rendered_hero = hero_display.sample();
 
         renderer.set_draw_color(Color::RGBA(176, 208, 184, 255));
         renderer.clear();
