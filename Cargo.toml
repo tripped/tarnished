@@ -6,6 +6,7 @@ authors = ["Trip Volpe <trip.volpe@gmail.com>"]
 [dependencies]
 sdl2 = "0.13.0"
 sdl2_image = "1.0.0"
+sdl2_mixer = "0.12.0"
 sdl2_ttf = "0.14.0"
 snes_spc = { git = "https://github.com/tripped/rust-snes_spc" }
 time = "0.1"
