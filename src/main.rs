@@ -11,10 +11,9 @@ extern crate num;
 use std::cmp::{min, max};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::audio::{AudioCallback, AudioSpecDesired};
+use sdl2::audio::AudioSpecDesired;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
-use snes_spc::SnesSpc;
 use num::rational::Ratio;
 use carboxyl::Sink;
 
@@ -24,6 +23,7 @@ mod textbox;
 mod tilepicker;
 mod map;
 mod brobot;
+mod audio;
 
 use scene::{Scene, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
@@ -31,17 +31,7 @@ use textbox::Textbox;
 use tilepicker::TilePicker;
 use map::MapLayer;
 use brobot::controlled_sprite;
-
-struct SpcPlayer {
-    emulator: SnesSpc
-}
-
-impl AudioCallback for SpcPlayer {
-    type Channel = i16;
-    fn callback(&mut self, out: &mut [i16]) {
-        self.emulator.play(out).unwrap();
-    }
-}
+use audio::SpcPlayer;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -76,9 +66,7 @@ fn main() {
 
     let audio = audio_subsystem.open_playback(None, desired_spec, |spec| {
         println!("Audio initialized: {:?}", spec);
-        SpcPlayer {
-            emulator: SnesSpc::from_file("assets/cotp.spc").unwrap()
-        }
+        SpcPlayer::new("assets/cotp.spc")
     }).unwrap();
 
     audio.resume();
