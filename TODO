@@ -22,3 +22,6 @@ depends on #1, or at least having mouse events in carboxyl.
 
 
 3. Move audio to a separate module, add basic mixing interface
+
+
+4. Greenfield a new FRP physics approach. Probably put momentum first.
