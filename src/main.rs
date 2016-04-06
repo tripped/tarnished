@@ -24,6 +24,7 @@ mod tilepicker;
 mod map;
 mod brobot;
 mod audio;
+mod physics;
 
 use scene::{Scene, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
