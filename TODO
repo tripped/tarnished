@@ -25,3 +25,12 @@ depends on #1, or at least having mouse events in carboxyl.
 
 
 4. Greenfield a new FRP physics approach. Probably put momentum first.
+
+Our first-order abstraction for physics entities will be a pair of signals,
+momentum and position. (We can assume that in this system, σₓσₛ≠ħ/2) In the
+normal course of things, position should be straightforwardly derived from
+momentum. We'll implement just two momentum functions at first: constant,
+and keyboard-controlled.
+
+This should (hopefully) make it a bit easier to implement collision detection
+in terms of momentum and position signals.
