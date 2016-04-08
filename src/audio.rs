@@ -21,24 +21,23 @@ impl AudioCallback for SpcPlayer {
 }
 
 /// Manages a set of channels
-pub struct Mixer {
-    channels: Vec<Box<AudioCallback<Channel = i16>>>,
+pub struct Mixer<S> {
+    channels: Vec<Box<S>>,
 }
 
-impl Mixer {
-    pub fn new() -> Mixer {
+impl<S: AudioCallback<Channel = i16>> Mixer<S> {
+    pub fn new() -> Mixer<S> {
         Mixer {
             channels: Vec::new(),
         }
     }
 
-    pub fn play<S: AudioCallback<Channel = i16> + 'static>(
-            &mut self, source: S) {
+    pub fn play(&mut self, source: S) {
         self.channels.push(Box::new(source));
     }
 }
 
-impl AudioCallback for Mixer {
+impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
     type Channel = i16;
 
     // XXX: assumes one channel
