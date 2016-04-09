@@ -40,7 +40,6 @@ impl<S: AudioCallback<Channel = i16>> Mixer<S> {
 impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
     type Channel = i16;
 
-    // XXX: assumes one channel
     fn callback(&mut self, out: &mut [i16]) {
         let mut buffer = vec![0i16;out.len()];
 
