@@ -68,7 +68,8 @@ fn main() {
     let audio = audio_subsystem.open_playback(None, desired_spec, |spec| {
         println!("Audio initialized: {:?}", spec);
         let mut mixer = Mixer::new();
-        mixer.play(SpcPlayer::new("assets/cotp.spc"));
+        mixer.play(SpcPlayer::new("assets/FireSpring.spc"));
+        mixer.play(SpcPlayer::new("assets/OnettNight2.spc"));
         mixer.play(SpcPlayer::new("assets/otherworldly.spc"));
         mixer
     }).unwrap();
