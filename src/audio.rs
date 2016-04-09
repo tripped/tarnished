@@ -42,8 +42,18 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
 
     // XXX: assumes one channel
     fn callback(&mut self, out: &mut [i16]) {
-        if self.channels.len() > 0 {
-            self.channels[0].callback(out);
+        let mut buffer = vec![0i16;out.len()];
+
+        // Zero the output buffer first, since this is not done for us!
+        for i in 0..out.len() {
+            out[i] = 0;
+        }
+
+        for channel in self.channels.iter_mut() {
+            channel.callback(buffer.as_mut_slice());
+            for i in 0..out.len() {
+                out[i] += buffer[i];
+            }
         }
     }
 }
