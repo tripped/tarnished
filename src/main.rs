@@ -69,6 +69,7 @@ fn main() {
         println!("Audio initialized: {:?}", spec);
         let mut mixer = Mixer::new();
         mixer.play(SpcPlayer::new("assets/cotp.spc"));
+        mixer.play(SpcPlayer::new("assets/otherworldly.spc"));
         mixer
     }).unwrap();
 
