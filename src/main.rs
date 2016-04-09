@@ -32,7 +32,7 @@ use textbox::Textbox;
 use tilepicker::TilePicker;
 use map::MapLayer;
 use brobot::controlled_sprite;
-use audio::SpcPlayer;
+use audio::{SpcPlayer, Mixer};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -67,7 +67,9 @@ fn main() {
 
     let audio = audio_subsystem.open_playback(None, desired_spec, |spec| {
         println!("Audio initialized: {:?}", spec);
-        SpcPlayer::new("assets/cotp.spc")
+        let mut mixer = Mixer::new();
+        mixer.play(SpcPlayer::new("assets/cotp.spc"));
+        mixer
     }).unwrap();
 
     audio.resume();
