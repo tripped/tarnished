@@ -48,10 +48,12 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
             out[i] = 0;
         }
 
+        let num = self.channels.len() as i16;
+
         for channel in self.channels.iter_mut() {
             channel.callback(buffer.as_mut_slice());
             for i in 0..out.len() {
-                out[i] += buffer[i];
+                out[i] += buffer[i] / num;
             }
         }
     }
