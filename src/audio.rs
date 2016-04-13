@@ -41,12 +41,6 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
     type Channel = i16;
 
     fn callback(&mut self, out: &mut [i16]) {
-        // 32KHz sample buffer, before interpolation
-        let srclen = (out.len() * 32000) / 44100;
-        let mut buffer = vec![016;srclen];
-
-        let mut interpolated = vec![0i16;out.len()];
-
         // Zero the output buffer first, since this is not done for us!
         for i in 0..out.len() {
             out[i] = 0;
@@ -55,6 +49,12 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
         let num = self.channels.len() as i16;
 
         for channel in self.channels.iter_mut() {
+            // 32KHz sample buffer, before interpolation
+            let srclen = (out.len() * 32000) / 44100;
+            let mut buffer = vec![016;srclen];
+
+            let mut interpolated = vec![0i16;out.len()];
+
             channel.callback(buffer.as_mut_slice());
 
             // upsample into 44.1KHz buffer
@@ -62,6 +62,7 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
                 interpolated[i] = buffer[(i * 32000) / 44100];
             }
 
+            // Blend channel into output
             for i in 0..out.len() {
                 out[i] += interpolated[i] / num;
             }
