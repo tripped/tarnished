@@ -60,7 +60,7 @@ fn main() {
     // Start making noise
     let audio_subsystem = sdl_context.audio().unwrap();
     let desired_spec = AudioSpecDesired {
-        freq: Some(32000),
+        freq: Some(44100),
         channels: Some(2),
         samples: None
     };
