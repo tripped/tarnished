@@ -57,9 +57,9 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
 
             channel.callback(buffer.as_mut_slice());
 
-            // upsample into 44.1KHz buffer
-            for i in 0..interpolated.len() {
-                interpolated[i] = buffer[(i * 32000) / 44100];
+            // Upsample into 44.1KHz buffer with zero-stuffing
+            for i in 0..buffer.len() {
+                interpolated[(i * 44100) / 32000] = buffer[i];
             }
 
             // Blend channel into output
