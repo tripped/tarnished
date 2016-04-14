@@ -40,6 +40,29 @@ impl<S: AudioCallback<Channel = i16>> Mixer<S> {
     }
 }
 
+/// Convert a lower-frequency sample buffer into a higher-frequency sample
+/// buffer. NOTE: currently broken.
+fn upsample(source: &[i16], target_samples: usize, x:i16)
+        -> (Vec<i16>, i16) {
+    assert!(target_samples > source.len());
+
+    // Upsample into target buffer with zero-stuffing
+    let mut stuffed = vec![0i16; target_samples];
+    for i in 0..source.len() {
+        stuffed[i * target_samples / source.len()] = source[i];
+    }
+
+    // Low-pass this batch of samples
+    let mut filtered = vec![0i16; stuffed.len()];
+    filtered[0] = stuffed[0] + x;
+    for i in 1..stuffed.len() {
+        filtered[i] = stuffed[i] + stuffed[i-1]
+    }
+    let lp = stuffed[target_samples-1];
+
+    (filtered, lp)
+}
+
 impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
     type Channel = i16;
 
@@ -52,30 +75,17 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
         let num = self.channels.len() as i16;
 
         for (n, channel) in self.channels.iter_mut().enumerate() {
-            // 32KHz sample buffer, before interpolation
+            // 32KHz sample buffer, before upsampling
             let srclen = (out.len() * 32000) / 44100;
             let mut buffer = vec![016;srclen];
-
-            let mut interpolated = vec![0i16;out.len()];
-
             channel.callback(buffer.as_mut_slice());
 
-            // Upsample into 44.1KHz buffer with zero-stuffing
-            for i in 0..buffer.len() {
-                interpolated[(i * 44100) / 32000] = buffer[i];
-            }
-
-            // Low-pass this batch of samples
-            let mut filtered = vec![0i16;interpolated.len()];
-            filtered[0] = interpolated[0] + self.lp[n];
-            for i in 1..interpolated.len() {
-                filtered[i] = interpolated[i] + interpolated[i-1]
-            }
-            self.lp[n] = interpolated[interpolated.len()-1];
+            let (result, lp) = upsample(&buffer, out.len(), self.lp[n]);
+            self.lp[n] = lp;
 
             // Blend channel into output
             for i in 0..out.len() {
-                out[i] += filtered[i] / num;
+                out[i] += result[i] / num;
             }
         }
     }
