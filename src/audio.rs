@@ -40,8 +40,13 @@ impl<S: AudioCallback<Channel = i16>> Mixer<S> {
     }
 }
 
-/// Convert a lower-frequency sample buffer into a higher-frequency sample
-/// buffer. NOTE: currently broken.
+/// Convert a lower-frequency sample buffer into a higher-frequency buffer.
+/// XXX: this is broken in several ways. First, it ignores the fact that our
+/// samples are actually interleaved LRLR stereo. Both upsampling and the
+/// low-pass filter will naturally butcher the audio when applied naively.
+/// We also need to account for temporal aliasing when zero-stuffing; starting
+/// at 0 for every batch of samples is incorrect, we must account for the
+/// integer division error from the previous buffer.
 fn upsample(source: &[i16], target_samples: usize, x:i16)
         -> (Vec<i16>, i16) {
     assert!(target_samples > source.len());
