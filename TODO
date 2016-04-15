@@ -23,6 +23,32 @@ depends on #1, or at least having mouse events in carboxyl.
 
 3. Move audio to a separate module, add basic mixing interface
 
+3a. FRP audio mixer
+
+Figure out a nice way to use FRP in the mixer. It would be super cool to
+represent every channel as a reactive behavior, but this raises at least two
+questions:
+
+    1.  In a push-pull system, what is the "push" that induces the behavior
+        to change?
+
+    2.  When sampling from a channel, how does the underlying reactive
+        behavior know how many samples to provide?
+
+Both points are related to the necessarily discrete and chunked nature of
+audio sampling. Currently an SDL audio callback is invoked at regular
+intervals and expected to fill a buffer of a size known at the point where the
+audio system is initialized.
+
+Possibly, then, we could "push" a value into the audio network that indicates
+how many samples will be required; each behavior (channel) could then produce
+an appropraite number of samples from their sources.
+
+NOTE: behaviors would also seem a natural way to implement transformations in
+the audio mixer as well; e.g., an upsampling fold or low-pass filter, of
+particular relevance to SPC emulator generated samples, as those are currently
+fixed at 32KHz.
+
 
 4. Greenfield a new FRP physics approach. Probably put momentum first.
 
