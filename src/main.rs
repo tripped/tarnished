@@ -34,6 +34,16 @@ use map::MapLayer;
 use brobot::controlled_sprite;
 use audio::{SpcPlayer, Mixer};
 
+use num::integer::Integer;
+
+trait RatioScalable: Clone + Integer {
+    fn scale(&self, scale: Ratio<Self>) -> Self {
+        (Ratio::from_integer(self.clone()) * scale).to_integer()
+    }
+}
+impl RatioScalable for u32 {}
+
+
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video = sdl_context.video().unwrap();
@@ -172,12 +182,10 @@ fn main() {
                 },
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui.sample() || !tilepicker.click((x, y)) {
-                        let x = x as u32;
-                        let y = y as u32;
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
-                        let x = (Ratio::from_integer(x) * scale).to_integer();
-                        let y = (Ratio::from_integer(y) * scale).to_integer();
+                        let x = (x as u32).scale(scale);
+                        let y = (y as u32).scale(scale);
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
