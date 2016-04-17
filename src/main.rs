@@ -36,6 +36,7 @@ use audio::{SpcPlayer, Mixer};
 
 use num::integer::Integer;
 
+// XXX: should be able to scale signed int by either signed or unsigned ratio
 trait RatioScalable: Clone + Integer {
     fn scale(&self, scale: Ratio<Self>) -> Self {
         (Ratio::from_integer(self.clone()) * scale).to_integer()
@@ -172,11 +173,12 @@ fn main() {
                     break 'mainloop
                 },
                 Event::MouseMotion {x, y, ..} => {
-                    let x = x as u32;
-                    let y = y as u32;
                     if painting {
-                        let x = (Ratio::from_integer(x) * scale).to_integer();
-                        let y = (Ratio::from_integer(y) * scale).to_integer();
+                        let (screen_x, screen_y) = screen_pos.sample();
+                        let x = ((x as u32).scale(scale.recip())
+                                 as i32 + screen_x) as u32;
+                        let y = ((y as u32).scale(scale.recip())
+                                 as i32 + screen_y) as u32;
                         map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
@@ -184,8 +186,15 @@ fn main() {
                     if !show_gui.sample() || !tilepicker.click((x, y)) {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
-                        let x = (x as u32).scale(scale);
-                        let y = (y as u32).scale(scale);
+                        // XXX: oh my god really
+                        let (screen_x, screen_y) = screen_pos.sample();
+                        let x = ((x as u32).scale(scale.recip())
+                                 as i32 + screen_x) as u32;
+                        let y = ((y as u32).scale(scale.recip())
+                                 as i32 + screen_y) as u32;
+
+                        // XXX: if set_px takes screen coords, it should be i32
+                        // XXX: don't swallow errors with ok!
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
