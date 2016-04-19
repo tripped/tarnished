@@ -49,6 +49,35 @@ the audio mixer as well; e.g., an upsampling fold or low-pass filter, of
 particular relevance to SPC emulator generated samples, as those are currently
 fixed at 32KHz.
 
+So, let's say we create a sink for "fill" events. An event would be pushed
+into this sink by the audio callback.
+
+What then depends on the stream, and how do the results get back to the audio
+callback? How many channels are there in the mixer, and why? A limited set of
+channels is a particularly poor abstraction. I wish to dispense with it. What
+all can produce sound? How is a thing that can produce sound introduced to the
+audio mixer?
+
+Oh yeah, and one more neat idea: why not tie sound sampling to the rest of the
+world's update cycle? 1/60s ~= 17ms is a plenty big enough audio buffer
+length, and it seems to tie things together nicely.
+
+There are some possible problems with this approach.
+
+    1.  Timing. Starting the SDL audio system with a sample count
+        corresponding to 1/60 of a second and relying on the audio callback
+        is likely to misalign with the desired framerate.
+    2.  Cumulative error. The SDL audio system provides an alternative, which
+        is to push arbitrary quantities of samples to an internal buffer
+        outside the control of the audio callback. This would allow us to push
+        data at the beginning of every frame, but since the hardware is
+        consuming it at its leisure, we are still likely to run into timing
+        problems. If we push too few samples, the audio will have brief blank
+        spaces, creating unpleasant ~60Hz noise. If we push too many, we fall
+        increasingly out of sync.
+
+It may be worth investigating lower-level access to audio hardware to address
+some of these issues.
 
 4. Greenfield a new FRP physics approach. Probably put momentum first.
 
