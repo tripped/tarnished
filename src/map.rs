@@ -71,17 +71,23 @@ impl MapLayer {
     }
 
     /// Map a point in pixels to the index of the tile containing that point.
-    fn point_to_index(&self, (x, y): (u32, u32)) -> Option<usize> {
-        let x = x / self.tile_w;
-        let y = y / self.tile_h;
-        if x >= self.width() || y >= self.height() {
+    fn point_to_index(&self, (x, y): (i32, i32)) -> Option<usize> {
+        let x = x / self.tile_w as i32;
+        let y = y / self.tile_h as i32;
+
+        // XXX: For now, maps have a hard top-left edge at 0,0. Maps with a
+        // non-zero origin may need to support negative coordinates, but using
+        // the i32 type here is mainly for convenience.
+        if x < 0 || x >= self.width() as i32 ||
+           y < 0 || y >= self.height() as i32 {
             return None;
         }
-        Some((y * self.width() + x) as usize)
+
+        Some((y * self.width() as i32 + x) as usize)
     }
 
     /// Get the tile value at a specified point (in pixels)
-    pub fn _get_px(&self, point: (u32, u32)) -> Option<u32> {
+    pub fn _get_px(&self, point: (i32, i32)) -> Option<u32> {
         match self.point_to_index(point) {
             Some(index) => Some(self.tiles[index]),
             None => None,
@@ -89,7 +95,7 @@ impl MapLayer {
     }
 
     /// Set the tile value at a specified point (in pixels)
-    pub fn set_px(&mut self, point: (u32, u32), tile: u32) -> Result<(), ()> {
+    pub fn set_px(&mut self, point: (i32, i32), tile: u32) -> Result<(), ()> {
         match self.point_to_index(point) {
             Some(index) => {
                 self.tiles[index] = tile;
@@ -129,13 +135,13 @@ fn get_px_returns_none_on_overflow() {
 
     // Passing a very large value as y is likely to overflow when trying
     // to compute the index!
-    assert_eq!(None, map._get_px((1, u32::max_value())));
+    assert_eq!(None, map._get_px((1, i32::max_value())));
 }
 
 #[test]
 fn set_px_returns_err_on_overflow() {
     let mut map = MapLayer::new("foobar", (16, 16), 25, vec![0;25*16]);
-    assert_eq!(Err(()), map.set_px((1, u32::max_value()), 0));
+    assert_eq!(Err(()), map.set_px((1, i32::max_value()), 0));
 }
 
 #[test]
