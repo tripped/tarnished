@@ -148,6 +148,8 @@ fn main() {
 
     // Screen position is determined by hero position and scale
     // XXX: (Also by screen size, but we'll move this to a signal as well later
+    // XXX: This should be broken up more; scaling and screen size both
+    // should probably be introduced in a separate lift.
     let (screen_w, screen_h) = renderer.window().unwrap().size();
     let screen_pos = lift!(move |scale, (hero_x, hero_y)| {
         let screen_w = (Ratio::from_integer(screen_w) / scale).to_integer();
