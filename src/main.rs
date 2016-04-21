@@ -196,8 +196,8 @@ fn main() {
                         let y = (y as u32).scale(scale.recip())
                                  as i32 + screen_y;
 
-                        // XXX: if set_px takes screen coords, it should be i32
-                        // XXX: don't swallow errors with ok!
+                        // XXX: don't swallow errors with ok! Or do, I'm
+                        // not your mom.
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
