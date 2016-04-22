@@ -7,6 +7,7 @@ extern crate rustc_serialize;
 #[macro_use(lift)]
 extern crate carboxyl;
 extern crate num;
+extern crate conv;
 
 use std::cmp::{min, max};
 use sdl2::event::Event;
