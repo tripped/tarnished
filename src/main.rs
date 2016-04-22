@@ -168,12 +168,8 @@ fn main() {
                 Event::MouseMotion {x, y, ..} => {
                     if painting {
                         let (screen_x, screen_y) = screen_pos.sample();
-                        // XXX: shouldn't have to convert to u32 to scale;
-                        // i32 should be scalable by Ratio<u32> just fine!
-                        let x = (x as u32).scale(scale.recip())
-                                 as i32 + screen_x;
-                        let y = (y as u32).scale(scale.recip())
-                                 as i32 + screen_y;
+                        let x = x.scale(scale.recip()) + screen_x;
+                        let y = y.scale(scale.recip()) + screen_y;
                         map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
@@ -182,10 +178,8 @@ fn main() {
                         // XXX: We have to explicitly transform by viewport,
                         // eventually UI should be part of the scene (?)
                         let (screen_x, screen_y) = screen_pos.sample();
-                        let x = (x as u32).scale(scale.recip())
-                                 as i32 + screen_x;
-                        let y = (y as u32).scale(scale.recip())
-                                 as i32 + screen_y;
+                        let x = x.scale(scale.recip()) + screen_x;
+                        let y = y.scale(scale.recip()) + screen_y;
 
                         // XXX: don't swallow errors with ok! Or do, I'm
                         // not your mom.
