@@ -14,7 +14,6 @@ use sdl2::keyboard::Keycode;
 use sdl2::audio::AudioSpecDesired;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
-use num::rational::Ratio;
 use carboxyl::Sink;
 
 mod renderer;
@@ -25,6 +24,7 @@ mod map;
 mod brobot;
 mod audio;
 mod physics;
+mod ratio;
 
 use scene::{Scene, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
@@ -33,17 +33,7 @@ use tilepicker::TilePicker;
 use map::MapLayer;
 use brobot::controlled_sprite;
 use audio::{SpcPlayer, Mixer};
-
-use num::integer::Integer;
-
-// XXX: should be able to scale signed int by either signed or unsigned ratio
-trait RatioScalable: Clone + Integer {
-    fn scale(&self, scale: Ratio<Self>) -> Self {
-        (Ratio::from_integer(self.clone()) * scale).to_integer()
-    }
-}
-impl RatioScalable for u32 {}
-
+use ratio::{Ratio, Scalable};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
