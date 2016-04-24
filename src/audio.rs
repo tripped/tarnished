@@ -82,7 +82,7 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
         for (n, channel) in self.channels.iter_mut().enumerate() {
             // 32KHz sample buffer, before upsampling
             let srclen = (out.len() * 32000) / 44100;
-            let mut buffer = vec![016;srclen];
+            let mut buffer = vec![0i16;srclen];
             channel.callback(buffer.as_mut_slice());
 
             let (result, lp) = upsample(&buffer, out.len(), self.lp[n]);
