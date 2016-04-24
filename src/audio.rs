@@ -85,12 +85,32 @@ impl<S: AudioCallback<Channel = i16>> AudioCallback for Mixer<S> {
             let mut buffer = vec![0i16;srclen];
             channel.callback(buffer.as_mut_slice());
 
-            let (result, lp) = upsample(&buffer, out.len(), self.lp[n]);
+            // Split buffer into left and right channels
+            assert!(srclen % 2 == 0);
+            let mut left = vec![0i16;srclen/2];
+            let mut right = vec![0i16;srclen/2];
+            for i in 0..srclen {
+                if i % 2 == 0 {
+                    left[i/2] = buffer[i];
+                } else {
+                    right[i/2] = buffer[i];
+                }
+            }
+
+            // Upsample the channels independently
+            // XXX: channels need independent upsample spillover
+            assert!(out.len() % 2 == 0);
+            let (left, lp) = upsample(&left, out.len()/2, self.lp[n]);
+            let (right, lp) = upsample(&right, out.len()/2, lp);
             self.lp[n] = lp;
 
             // Blend channel into output
             for i in 0..out.len() {
-                out[i] += result[i] / num;
+                if i % 2 == 0 {
+                    out[i] += left[i/2] / num;
+                } else {
+                    out[i] += right[i/2] / num;
+                }
             }
         }
     }
