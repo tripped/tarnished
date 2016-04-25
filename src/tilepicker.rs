@@ -6,6 +6,7 @@ pub struct TilePicker {
     tileset: String,
     tile_width: u32,
     tile_height: u32,
+    // XXX: replace with Ratio
     scale: f32,
     // widget has total ownership of its position for now
     rect: Rect,
@@ -69,7 +70,7 @@ impl TilePicker {
         let mut tiles = Vec::new();
 
         // target render dimensions for each tile
-        // XXX: seriously all this (x as f32 * y) as u32 crap is annoying
+        // XXX: replace this with Ratio scaling
         let (w, h) = ((self.tile_width as f32 * self.scale) as u32,
                       (self.tile_height as f32 * self.scale) as u32);
         let padding = 1;
