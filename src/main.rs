@@ -155,9 +155,16 @@ fn main() {
         .fold(false, |t, _| !t );
 
     'mainloop: loop {
-        // XXX: this is only up here because a few of the event cases
-        // below need it, which is a temporary state of affairs.
+        // XXX: We have to explicitly transform by viewport,
+        // eventually UI should be part of the scene (?)
         let scale = scale_signal.sample();
+        let (screen_x, screen_y) = screen_pos.sample();
+
+        let transform_to_world = |x: i32, y: i32| {
+            let x = x.scale(scale.recip()) + screen_x;
+            let y = y.scale(scale.recip()) + screen_y;
+            (x, y)
+        };
 
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
@@ -167,19 +174,13 @@ fn main() {
                 },
                 Event::MouseMotion {x, y, ..} => {
                     if painting {
-                        let (screen_x, screen_y) = screen_pos.sample();
-                        let x = x.scale(scale.recip()) + screen_x;
-                        let y = y.scale(scale.recip()) + screen_y;
+                        let (x, y) = transform_to_world(x, y);
                         map.set_px((x, y), tilepicker.selected()).ok();
                     }
                 },
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui.sample() || !tilepicker.click((x, y)) {
-                        // XXX: We have to explicitly transform by viewport,
-                        // eventually UI should be part of the scene (?)
-                        let (screen_x, screen_y) = screen_pos.sample();
-                        let x = x.scale(scale.recip()) + screen_x;
-                        let y = y.scale(scale.recip()) + screen_y;
+                        let (x, y) = transform_to_world(x, y);
 
                         // XXX: don't swallow errors with ok! Or do, I'm
                         // not your mom.
