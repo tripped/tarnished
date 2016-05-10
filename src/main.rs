@@ -181,9 +181,6 @@ fn main() {
                 Event::MouseButtonDown {x, y, ..} => {
                     if !show_gui.sample() || !tilepicker.click((x, y)) {
                         let (x, y) = transform_to_world(x, y);
-
-                        // XXX: don't swallow errors with ok! Or do, I'm
-                        // not your mom.
                         map.set_px((x, y), tilepicker.selected()).ok();
                         painting = true;
                     }
