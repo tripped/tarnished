@@ -20,6 +20,12 @@ Create an interface that just exposes the relevant streams and signals;
 should allow a fairly elegant decoupling of GUI from the main loop. Probably
 depends on #1, or at least having mouse events in carboxyl.
 
+Note that there are some dependency issues that probably should be fixed.
+Notably, world rendering and the GUI are ostensibly independent systems, but
+have an implicit dependency on each other in that they both depend on the
+scale signal and must use it in the same way in order for their integration to
+be correct. This suggests that the dependency should be made explicit,
+probably by moving ownership of the scale behavior to one or the other.
 
 3. Move audio to a separate module, add basic mixing interface
 
