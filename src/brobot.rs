@@ -95,7 +95,7 @@ pub fn controlled_sprite(asset: &str, w: u32, h: u32, x: i32, y: i32,
     // rather impure! Perhaps this should be a fold over a combined stream
     // containing keyboard and time signals..?
     let initial_position = (x as f32, y as f32);
-    let speed = 42.0;
+    let speed = 120.0;
 
     let position = {
         let impulse = impulse.clone();
@@ -121,7 +121,8 @@ pub fn controlled_sprite(asset: &str, w: u32, h: u32, x: i32, y: i32,
     // Finally, we can describe presentation in terms of time, impulse,
     // direction, and position.
     let render = {
-        let steps_per_second = 5.0;
+        // XXX: figure out the units here, this is clearly not steps per sec
+        let steps_per_second = 16.0;
         let asset = asset.to_string();
         lift!(move |time, impulse, direction, position| {
             let mut frame = match direction {

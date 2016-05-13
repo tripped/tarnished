@@ -95,3 +95,9 @@ and keyboard-controlled.
 
 This should (hopefully) make it a bit easier to implement collision detection
 in terms of momentum and position signals.
+
+5. Add metrics.
+
+Measure, measure, measure! Probably want to track render and FRP network
+update times to start with. Might also be nice to add automatic regression
+detection somehow.

@@ -51,6 +51,7 @@ fn main() {
 
     let mut renderer = window.renderer()
         .accelerated()
+        .present_vsync()
         .build()
         .unwrap();
 
@@ -115,7 +116,6 @@ fn main() {
     let (hero_pos, hero_display) = controlled_sprite(
         "assets/porky", 16, 24, 85, 100,
         keyboard_stream.clone(), time.clone(), delta_sink.stream());
-    let mut stupid_ticker = 0;
 
     // A Stream consisting of just key-down events
     // XXX: temporary, just used by scale and show_gui signals
@@ -197,16 +197,9 @@ fn main() {
             sdl_sink.send(event);
         }
 
-        // XXX: this is the jankiest possible way to control timestep.
-        // Should probably write a proper game loop next.
-        let elapsed = time::precise_time_ns() - start;
-        let dt = elapsed - stupid_ticker;
-        if stupid_ticker > 16666666 {
-            stupid_ticker = 0;
-            delta_sink.send(1.0/60.0);
-        } else {
-            stupid_ticker += dt;
-        }
+        // XXX: this is still janky, gating everything on vsync.
+        // Add a proper game loop!
+        delta_sink.send(1.0/60.0);
 
         // XXX: note that box must be rendered before creating scene, since
         // scene borrows references to all the instructions added to it. This
