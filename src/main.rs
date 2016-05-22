@@ -154,52 +154,67 @@ fn main() {
         .filter(|k| *k == Keycode::F)
         .fold(false, |t, _| !t );
 
+    // Game loop control
+    let mut curtime = time::precise_time_ns();
+    let mut accumulator = 0u64;
+    let dt = 16666667;
+
     'mainloop: loop {
         // XXX: We have to explicitly transform by viewport,
         // eventually UI should be part of the scene (?)
         let scale = scale_signal.sample();
         let (screen_x, screen_y) = screen_pos.sample();
 
-        let transform_to_world = |x: i32, y: i32| {
-            let x = x.scale(scale.recip()) + screen_x;
-            let y = y.scale(scale.recip()) + screen_y;
-            (x, y)
-        };
+        // Add rendering delta to accumulator
+        // XXX: need to clean this up and factor out rendering/integration
+        // code; would make this loop much prettier.
+        let newtime = time::precise_time_ns();
+        let frametime = newtime - curtime;
+        curtime = newtime;
+        accumulator += frametime;
 
-        for event in sdl_context.event_pump().unwrap().poll_iter() {
-            match event {
-                Event::Quit{..} |
-                Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
-                    break 'mainloop
-                },
-                Event::MouseMotion {x, y, ..} => {
-                    if painting {
-                        let (x, y) = transform_to_world(x, y);
-                        map.set_px((x, y), tilepicker.selected()).ok();
-                    }
-                },
-                Event::MouseButtonDown {x, y, ..} => {
-                    if !show_gui.sample() || !tilepicker.click((x, y)) {
-                        let (x, y) = transform_to_world(x, y);
-                        map.set_px((x, y), tilepicker.selected()).ok();
-                        painting = true;
-                    }
-                },
-                Event::MouseButtonUp {..} => {
-                    painting = false;
-                },
-                Event::MouseWheel {y: scroll_y, ..} => {
-                    tilepicker.scroll(scroll_y);
-                },
-                _ => { }
+        while accumulator >= dt {
+
+            let transform_to_world = |x: i32, y: i32| {
+                let x = x.scale(scale.recip()) + screen_x;
+                let y = y.scale(scale.recip()) + screen_y;
+                (x, y)
+            };
+
+            for event in sdl_context.event_pump().unwrap().poll_iter() {
+                match event {
+                    Event::Quit{..} |
+                    Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
+                        break 'mainloop
+                    },
+                    Event::MouseMotion {x, y, ..} => {
+                        if painting {
+                            let (x, y) = transform_to_world(x, y);
+                            map.set_px((x, y), tilepicker.selected()).ok();
+                        }
+                    },
+                    Event::MouseButtonDown {x, y, ..} => {
+                        if !show_gui.sample() || !tilepicker.click((x, y)) {
+                            let (x, y) = transform_to_world(x, y);
+                            map.set_px((x, y), tilepicker.selected()).ok();
+                            painting = true;
+                        }
+                    },
+                    Event::MouseButtonUp {..} => {
+                        painting = false;
+                    },
+                    Event::MouseWheel {y: scroll_y, ..} => {
+                        tilepicker.scroll(scroll_y);
+                    },
+                    _ => { }
+                }
+
+                sdl_sink.send(event);
             }
 
-            sdl_sink.send(event);
+            accumulator -= dt;
+            delta_sink.send((dt as f32) / 1e9);
         }
-
-        // XXX: this is still janky, gating everything on vsync.
-        // Add a proper game loop!
-        delta_sink.send(1.0/60.0);
 
         // XXX: note that box must be rendered before creating scene, since
         // scene borrows references to all the instructions added to it. This
