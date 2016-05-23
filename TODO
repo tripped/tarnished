@@ -13,6 +13,36 @@ into the network, so they can be present in the same stream. E.g.,
 XXX: not sure about including time deltas there; we'd prefer to not use
 deltas for anything except generating the timestream.
 
+As follow-on work, this will allow pulling the "world" out as an encapsulated
+reactive behavior. This will dramatically clean up the main game loop, though
+it will also require deciding on some suitable type for the rendering signal.
+The main loop owns the renderer and render context, and is responsible for
+sampling the render signal and presenting its value to the renderer, which it
+currently does by generating three Scenes, world, HUD, and GUI, which differ
+by their scaling and anchoring.
+
+Scene does not currently contain anything except a z-sorted set of render ops,
+so to fully describe this compositing would require a signal type of
+Signal<Vec<(Scene, Ratio, Point)>>. Eventually, however, anchoring and scale
+may be incorporated into Scene in several possible ways:
+
+    a.  Add a single scale and anchor attribute per Scene.
+    b.  Allow a scene to contain multiple layers, each of which represents
+        a z-index barrier and has its own scale and anchor.
+    c.  Allow individual ops within a scene to have independent scale and
+        anchor.
+
+Option A seems simplest, and effectively makes a Scene into a single layer;
+the world's render signal would then have type Signal<Vec<Scene>>.
+
+Options B and C would make it possible to express any compositing within a
+single Scene, simplifying the behavior type to Signal<Scene>.
+
+All have different architectural implications, especially when it comes to
+thinking about how to optimize the render pipeline, and whether layer-by-layer
+memoization maps well to real-world usage. More on this to follow; but as a
+first draft, choosing (A) is likely to be a good step.
+
 
 2. Move editor GUI to a separate module
 
