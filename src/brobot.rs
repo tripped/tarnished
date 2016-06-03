@@ -1,5 +1,4 @@
 use scene::Tile;
-use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use carboxyl::{Signal, Stream};
 use event::IOEvent;
