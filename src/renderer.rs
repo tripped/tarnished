@@ -102,7 +102,7 @@ impl<'a> Renderer<'a> {
                scale: Ratio<u32>) -> Renderer<'a> {
         let scale = *scale.numer() as f32 / *scale.denom() as f32;
         let original_scale = renderer.scale();
-        renderer.set_scale(scale, scale);
+        renderer.set_scale(scale, scale).unwrap();
         Renderer {
             renderer: renderer,
             offset: offset,
@@ -191,13 +191,13 @@ impl<'a> Renderer<'a> {
     /// implementing the widget system.
     pub fn draw_rect(&mut self, rect: Rect, color: Color) {
         self.renderer.set_draw_color(color);
-        self.renderer.draw_rect(rect);
+        self.renderer.draw_rect(rect).unwrap();
     }
 
     /// Draw a filled rectangle onto the target surface.
     pub fn fill_rect(&mut self, rect: Rect, color: Color) {
         self.renderer.set_draw_color(color);
-        self.renderer.fill_rect(rect);
+        self.renderer.fill_rect(rect).unwrap();
     }
 }
 
@@ -205,6 +205,6 @@ impl<'a> Drop for Renderer<'a> {
     fn drop(&mut self) {
         // Restore the borrowed renderer to its original scale
         let (sx, sy) = self.original_scale;
-        self.renderer.set_scale(sx, sy);
+        self.renderer.set_scale(sx, sy).unwrap();
     }
 }
