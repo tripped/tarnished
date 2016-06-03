@@ -22,7 +22,7 @@ impl TilePicker {
             tile_width: tile_width,
             tile_height: tile_height,
             scale: 4.0,
-            rect: Rect::new_unwrap(x, y, width, height),
+            rect: Rect::new(x, y, width, height),
             offset: 0,
             selected: 0,
         }
@@ -79,10 +79,10 @@ impl TilePicker {
 
         for i in 0..n {
             let tile = i + self.offset;
-            let src = Rect::new_unwrap(
+            let src = Rect::new(
                 (tile * self.tile_width) as i32, 0,
                 self.tile_width, self.tile_height);
-            let dst = Rect::new_unwrap(
+            let dst = Rect::new(
                 (i * (w + padding)) as i32, padding as i32, w, h);
 
             tiles.push(Tex::new(&self.tileset, Some(src), dst));
@@ -91,7 +91,7 @@ impl TilePicker {
             if tile == self.selected {
                 rects.push(
                     Rectangle::filled(
-                        Rect::new_unwrap(
+                        Rect::new(
                             -(padding as i32) + (i * (w+padding)) as i32, 0,
                             w + 2*padding, h + 2*padding),
                         Color::RGBA(255, 0, 0, 255)));

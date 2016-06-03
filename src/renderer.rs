@@ -121,7 +121,7 @@ impl<'a> Renderer<'a> {
         let y = (dst.y() - dy) as i32;
         let w = dst.width();
         let h = dst.height();
-        let dst = Rect::new_unwrap(x, y, w, h);
+        let dst = Rect::new(x, y, w, h);
 
         self.renderer.copy(tex, src, Some(dst));
     }
@@ -146,7 +146,7 @@ impl<'a> Renderer<'a> {
             VPos::Stretch(y, h) => (y, y+h as i32),
         };
 
-        let dst = Rect::new_unwrap(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
+        let dst = Rect::new(x1, y1, (x2 - x1) as u32, (y2 - y1) as u32);
         self.copy(context, asset, None, dst);
     }
 
@@ -156,8 +156,8 @@ impl<'a> Renderer<'a> {
     pub fn draw_tile(&mut self, context: &mut RenderContext,
                      tileset: &str, n: u32, w: u32, h: u32,
                      x: i32, y: i32) {
-        let src = Rect::new_unwrap((n * w) as i32, 0, w, h);
-        let dst = Rect::new_unwrap(x, y, w, h);
+        let src = Rect::new((n * w) as i32, 0, w, h);
+        let dst = Rect::new(x, y, w, h);
         self.copy(context, tileset, Some(src), dst);
     }
 

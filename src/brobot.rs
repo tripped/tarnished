@@ -2,6 +2,7 @@ use scene::Tile;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use carboxyl::{Signal, Stream};
+use event::IOEvent;
 
 #[derive(Copy, Clone)]
 pub enum Direction {
@@ -34,24 +35,24 @@ impl Impulse {
 }
 
 /// The eternal cycle of changing desires based on SDL keyboard events
-fn samsara(impulse: Impulse, event: Event) -> Impulse {
+fn samsara(impulse: Impulse, event: IOEvent) -> Impulse {
     // XXX: ew.
     match event {
-        Event::KeyDown {keycode: Some(Keycode::Left), ..} =>
+        IOEvent::KeyDown(Keycode::Left) =>
             Impulse {left: true, ..impulse},
-        Event::KeyDown {keycode: Some(Keycode::Up), ..} =>
+        IOEvent::KeyDown(Keycode::Up) =>
             Impulse {up: true, ..impulse},
-        Event::KeyDown {keycode: Some(Keycode::Right), ..} =>
+        IOEvent::KeyDown(Keycode::Right) =>
             Impulse {right: true, ..impulse},
-        Event::KeyDown {keycode: Some(Keycode::Down), ..} =>
+        IOEvent::KeyDown(Keycode::Down) =>
             Impulse {down: true, ..impulse},
-        Event::KeyUp {keycode: Some(Keycode::Left), ..} =>
+        IOEvent::KeyUp(Keycode::Left) =>
             Impulse {left: false, ..impulse},
-        Event::KeyUp {keycode: Some(Keycode::Up), ..} =>
+        IOEvent::KeyUp(Keycode::Up) =>
             Impulse {up: false, ..impulse},
-        Event::KeyUp {keycode: Some(Keycode::Right), ..} =>
+        IOEvent::KeyUp(Keycode::Right) =>
             Impulse {right: false, ..impulse},
-        Event::KeyUp {keycode: Some(Keycode::Down), ..} =>
+        IOEvent::KeyUp(Keycode::Down) =>
             Impulse {down: false, ..impulse},
         _ => impulse
     }
@@ -61,7 +62,7 @@ fn samsara(impulse: Impulse, event: Event) -> Impulse {
 /// is a pair of signals, one containing position, and one containing the
 /// visible presentation of the sprite.
 pub fn controlled_sprite(asset: &str, w: u32, h: u32, x: i32, y: i32,
-            keyboard: Stream<Event>,
+            keyboard: Stream<IOEvent>,
             time: Signal<f32>,
             time_delta: Stream<f32>) -> (Signal<(f32, f32)>, Signal<Tile>) {
     // First, transform keyboard events into a time-varying impulse signal

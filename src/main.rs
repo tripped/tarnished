@@ -26,6 +26,7 @@ mod brobot;
 mod audio;
 mod physics;
 mod ratio;
+mod event;
 
 use scene::{Scene, sprite, text};
 use renderer::{RenderContext, HPos, VPos};
@@ -35,6 +36,7 @@ use map::MapLayer;
 use brobot::controlled_sprite;
 use audio::{SpcPlayer, Mixer};
 use ratio::{Ratio, Scalable};
+use event::{IOEvent, translate_event};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -68,7 +70,7 @@ fn main() {
         samples: None
     };
 
-    let audio = audio_subsystem.open_playback(None, desired_spec, |spec| {
+    let audio = audio_subsystem.open_playback(None, &desired_spec, |spec| {
         println!("Audio initialized: {:?}", spec);
         let mut mixer = Mixer::new();
         mixer.play(SpcPlayer::new("assets/FireSpring.spc"));
@@ -81,7 +83,7 @@ fn main() {
     let starman = sprite("assets/starmanjr",
         HPos::Center(200), VPos::Center(125));
     let textbox = Textbox::new("assets/box",
-        Rect::new_unwrap(12, 12, 32, 16));
+        Rect::new(12, 12, 32, 16));
     let hello = text("$0.00", "assets/orangekid", 30, 18);
 
     let mut map = MapLayer::from_file("assets/map.json")
@@ -102,7 +104,7 @@ fn main() {
     // A Stream consisting of all key-up and key-down events
     let keyboard_stream = sdl_sink.stream().filter(|event| {
         match *event {
-            Event::KeyDown {..} | Event::KeyUp {..} => true,
+            IOEvent::KeyDown(_) | IOEvent::KeyUp(_) => true,
             _ => false
         }
     });
@@ -121,7 +123,7 @@ fn main() {
     // XXX: temporary, just used by scale and show_gui signals
     let keydown_stream = keyboard_stream.filter_map(|event| {
         match event {
-            Event::KeyDown {keycode, ..} => keycode,
+            IOEvent::KeyDown(keycode) => Some(keycode),
             _ => None
         }
     });
@@ -209,7 +211,10 @@ fn main() {
                     _ => { }
                 }
 
-                sdl_sink.send(event);
+                match translate_event(event) {
+                    Some(e) => { sdl_sink.send(e); },
+                    None => {},
+                }
             }
 
             accumulator -= dt;
