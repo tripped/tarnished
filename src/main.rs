@@ -211,10 +211,7 @@ fn main() {
                     _ => { }
                 }
 
-                match translate_event(event) {
-                    Some(e) => { sdl_sink.send(e); },
-                    None => {},
-                }
+                translate_event(event).map(|e| sdl_sink.send(e));
             }
 
             accumulator -= dt;
