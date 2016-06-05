@@ -1,12 +1,10 @@
-use std::fs::File;
-use std::io;
-use std::io::{Read, Write};
-use std::path::Path;
-
 // XXX: switch to serde
 use rustc_serialize::json;
-
 use scene::Tile;
+use std::fs::File;
+use std::io::{Read, Write};
+use std::io;
+use std::path::Path;
 
 /// A grid of cells, drawn from a tileset.
 #[derive(RustcEncodable, RustcDecodable)]

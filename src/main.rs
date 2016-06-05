@@ -1,42 +1,42 @@
+#[macro_use(lift)]
+extern crate carboxyl;
+extern crate conv;
+extern crate num;
+extern crate rustc_serialize;
 extern crate sdl2;
 extern crate sdl2_image;
 extern crate sdl2_ttf;
 extern crate snes_spc;
 extern crate time;
-extern crate rustc_serialize;
-#[macro_use(lift)]
-extern crate carboxyl;
-extern crate num;
-extern crate conv;
 
-use std::cmp::{min, max};
+use carboxyl::Sink;
+use sdl2::audio::AudioSpecDesired;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::audio::AudioSpecDesired;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
-use carboxyl::Sink;
+use std::cmp::{min, max};
 
+mod audio;
+mod brobot;
+mod event;
+mod map;
+mod physics;
+mod ratio;
 mod renderer;
 mod scene;
 mod textbox;
 mod tilepicker;
-mod map;
-mod brobot;
-mod audio;
-mod physics;
-mod ratio;
-mod event;
 
-use scene::{Scene, sprite, text};
+use audio::{SpcPlayer, Mixer};
+use brobot::controlled_sprite;
+use event::{IOEvent, translate_event};
+use map::MapLayer;
+use ratio::{Ratio, Scalable};
 use renderer::{RenderContext, HPos, VPos};
+use scene::{Scene, sprite, text};
 use textbox::Textbox;
 use tilepicker::TilePicker;
-use map::MapLayer;
-use brobot::controlled_sprite;
-use audio::{SpcPlayer, Mixer};
-use ratio::{Ratio, Scalable};
-use event::{IOEvent, translate_event};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();

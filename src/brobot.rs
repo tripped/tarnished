@@ -1,7 +1,7 @@
-use scene::Tile;
-use sdl2::keyboard::Keycode;
 use carboxyl::{Signal, Stream};
 use event::IOEvent;
+use scene::Tile;
+use sdl2::keyboard::Keycode;
 
 #[derive(Copy, Clone)]
 pub enum Direction {

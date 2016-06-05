@@ -1,5 +1,5 @@
-use snes_spc::SnesSpc;
 use sdl2::audio::AudioCallback;
+use snes_spc::SnesSpc;
 
 pub struct SpcPlayer {
     emulator: SnesSpc

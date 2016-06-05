@@ -1,12 +1,10 @@
-use std::cmp::Ordering;
-use std::collections::BinaryHeap;
-
-use sdl2;
+use num::rational::Ratio;
+use renderer::{Renderer, RenderContext, HPos, VPos};
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
-use renderer::{Renderer, RenderContext, HPos, VPos};
-
-use num::rational::Ratio;
+use sdl2;
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 
 /// A `Visible` object can be shown using a renderer. It is atomic with respect
 /// to z-ordering, i.e., it is always entirely behind or entirely in front of

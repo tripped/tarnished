@@ -1,6 +1,6 @@
 pub use num::rational::Ratio;
-use num::integer::Integer;
 use conv::{ValueFrom, ApproxFrom, ValueInto, ApproxInto};
+use num::integer::Integer;
 
 /// A trait defining how an integer can be scaled by ratios of various types.
 /// `T` is the type of the ratio, `I` is the intermediate promotion type.

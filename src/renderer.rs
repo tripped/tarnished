@@ -1,13 +1,12 @@
-use std::collections::HashMap;
-use std::path::Path;
-
-use sdl2;
-use sdl2_ttf;
+use num::rational::Ratio;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::{Texture, TextureQuery};
+use sdl2;
 use sdl2_image::LoadTexture;
-use num::rational::Ratio;
+use sdl2_ttf;
+use std::collections::HashMap;
+use std::path::Path;
 
 /// Specifies a draw rect's horizontal position and alignment
 #[derive(Copy, Clone)]

@@ -1,6 +1,6 @@
 use scene::{Rectangle, Tex};
-use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 
 pub struct TilePicker {
     tileset: String,
