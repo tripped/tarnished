@@ -37,22 +37,14 @@ impl Impulse {
 fn samsara(impulse: Impulse, event: IOEvent) -> Impulse {
     // XXX: ew.
     match event {
-        IOEvent::KeyDown(Keycode::Left) =>
-            Impulse {left: true, ..impulse},
-        IOEvent::KeyDown(Keycode::Up) =>
-            Impulse {up: true, ..impulse},
-        IOEvent::KeyDown(Keycode::Right) =>
-            Impulse {right: true, ..impulse},
-        IOEvent::KeyDown(Keycode::Down) =>
-            Impulse {down: true, ..impulse},
-        IOEvent::KeyUp(Keycode::Left) =>
-            Impulse {left: false, ..impulse},
-        IOEvent::KeyUp(Keycode::Up) =>
-            Impulse {up: false, ..impulse},
-        IOEvent::KeyUp(Keycode::Right) =>
-            Impulse {right: false, ..impulse},
-        IOEvent::KeyUp(Keycode::Down) =>
-            Impulse {down: false, ..impulse},
+        IOEvent::KeyDown(Keycode::Left) => Impulse {left: true, ..impulse},
+        IOEvent::KeyDown(Keycode::Up) => Impulse {up: true, ..impulse},
+        IOEvent::KeyDown(Keycode::Right) => Impulse {right: true, ..impulse},
+        IOEvent::KeyDown(Keycode::Down) => Impulse {down: true, ..impulse},
+        IOEvent::KeyUp(Keycode::Left) => Impulse {left: false, ..impulse},
+        IOEvent::KeyUp(Keycode::Up) => Impulse {up: false, ..impulse},
+        IOEvent::KeyUp(Keycode::Right) => Impulse {right: false, ..impulse},
+        IOEvent::KeyUp(Keycode::Down) => Impulse {down: false, ..impulse},
         _ => impulse
     }
 }
