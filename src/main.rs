@@ -160,7 +160,9 @@ fn main() {
 
     // Metrics
     let mut logic_time = 0u64;
+    let mut logic_time_max = 0u64;
     let mut render_time = 0u64;
+    let mut render_time_max = 0u64;
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
@@ -224,7 +226,11 @@ fn main() {
         }
 
         // Count time spent updating the reactive network
-        logic_time += time::precise_time_ns() - logic_start;
+        {
+            let this_frame = time::precise_time_ns() - logic_start;
+            logic_time_max = max(this_frame, logic_time_max);
+            logic_time += this_frame;
+        }
 
         let render_start = time::precise_time_ns();
 
@@ -269,19 +275,26 @@ fn main() {
         renderer.present();
 
         // Count time spent rendering the frame
-        render_time += time::precise_time_ns() - render_start;
+        {
+            let this_frame = time::precise_time_ns() - render_start;
+            render_time_max = max(this_frame, render_time_max);
+            render_time += this_frame;
+        }
 
         frames += 1;
     }
 
     let end = time::precise_time_ns();
     let fps = (frames as f64 / ((end - start) as f64 / 1e9)) as u32;
+    println!("Performance summary:");
     println!("Rendered {} frames in {} ns; effective: {} fps",
              frames, end - start, fps);
-    println!("Average logic update: {:.*} ms", 2,
-             logic_time as f64 / frames as f64 / 1000000.0);
-    println!("Average render: {:.*} ns", 2,
-             render_time as f64 / frames as f64 / 1000000.0);
+    println!("Logic update 𝚫t:\t\tmean: {:.*} ms\tmax: {:.*} ms",
+             2, logic_time as f64 / frames as f64 / 1e6,
+             2, logic_time_max as f64 / 1e6);
+    println!("Render 𝚫t:\t\t\tmean: {:.*} ms\tmax: {:.*} ms",
+             2, render_time as f64 / frames as f64 / 1e6,
+             2, render_time_max as f64 / 1e6);
 
     map.save("assets/map.json").unwrap();
 }
