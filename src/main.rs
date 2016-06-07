@@ -163,6 +163,8 @@ fn main() {
     let mut logic_time_max = 0u64;
     let mut render_time = 0u64;
     let mut render_time_max = 0u64;
+    let mut present_time = 0u64;
+    let mut present_time_max = 0u64;
     let mut frames = 0u32;
     let start = time::precise_time_ns();
 
@@ -272,13 +274,22 @@ fn main() {
                 Ratio::from_integer(1));
         }
 
-        renderer.present();
-
         // Count time spent rendering the frame
         {
             let this_frame = time::precise_time_ns() - render_start;
             render_time_max = max(this_frame, render_time_max);
             render_time += this_frame;
+        }
+
+        let present_start = time::precise_time_ns();
+
+        renderer.present();
+
+        // Count time spent presenting to the SDL renderer
+        {
+            let this_frame = time::precise_time_ns() - present_start;
+            present_time_max = max(this_frame, present_time_max);
+            present_time += this_frame;
         }
 
         frames += 1;
@@ -295,6 +306,9 @@ fn main() {
     println!("Render 𝚫t:\t\t\tmean: {:.*} ms\tmax: {:.*} ms",
              2, render_time as f64 / frames as f64 / 1e6,
              2, render_time_max as f64 / 1e6);
+    println!("Present 𝚫t:\t\t\tmean: {:.*} ms\tmax: {:.*} ms",
+             2, present_time as f64 / frames as f64 / 1e6,
+             2, present_time_max as f64 / 1e6);
 
     map.save("assets/map.json").unwrap();
 }
