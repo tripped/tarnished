@@ -95,9 +95,6 @@ fn main() {
     let mut tilepicker = TilePicker::new("assets/cotp", 16, 16, 0, 0, 960, 66);
     let mut painting = false;
 
-    let mut frames = 0u32;
-    let start = time::precise_time_ns();
-
     // The one sink for all SDL events.
     let sdl_sink = Sink::new();
 
@@ -161,7 +158,15 @@ fn main() {
     let mut accumulator = 0u64;
     let dt = 16666667;
 
+    // Metrics
+    let mut logic_time = 0u64;
+    let mut render_time = 0u64;
+    let mut frames = 0u32;
+    let start = time::precise_time_ns();
+
     'mainloop: loop {
+        let logic_start = time::precise_time_ns();
+
         // XXX: We have to explicitly transform by viewport,
         // eventually UI should be part of the scene (?)
         let scale = scale_signal.sample();
@@ -218,6 +223,11 @@ fn main() {
             delta_sink.send((dt as f32) / 1e9);
         }
 
+        // Count time spent updating the reactive network
+        logic_time += time::precise_time_ns() - logic_start;
+
+        let render_start = time::precise_time_ns();
+
         // XXX: note that box must be rendered before creating scene, since
         // scene borrows references to all the instructions added to it. This
         // is perhaps an API weakness; might end up just boxing visibles.
@@ -258,6 +268,9 @@ fn main() {
 
         renderer.present();
 
+        // Count time spent rendering the frame
+        render_time += time::precise_time_ns() - render_start;
+
         frames += 1;
     }
 
@@ -265,6 +278,10 @@ fn main() {
     let fps = (frames as f64 / ((end - start) as f64 / 1e9)) as u32;
     println!("Rendered {} frames in {} ns; effective: {} fps",
              frames, end - start, fps);
+    println!("Average logic update: {:.*} ms", 2,
+             logic_time as f64 / frames as f64 / 1000000.0);
+    println!("Average render: {:.*} ns", 2,
+             render_time as f64 / frames as f64 / 1000000.0);
 
     map.save("assets/map.json").unwrap();
 }
