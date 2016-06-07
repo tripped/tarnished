@@ -165,7 +165,7 @@ fn main() {
     let mut render_time_max = 0u64;
     let mut present_time = 0u64;
     let mut present_time_max = 0u64;
-    let mut frames = 0u32;
+    let mut frames = 0u64;
     let start = time::precise_time_ns();
 
     'mainloop: loop {
