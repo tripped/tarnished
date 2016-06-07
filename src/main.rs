@@ -53,7 +53,7 @@ fn main() {
 
     let mut renderer = window.renderer()
         .accelerated()
-        .present_vsync()
+        //.present_vsync()
         .build()
         .unwrap();
 
@@ -283,6 +283,8 @@ fn main() {
 
         let present_start = time::precise_time_ns();
 
+        // XXX: this takes <1ms even with present_vsync enabled; instead the
+        // rendering step absorbs the synchronization latency? Figure out why.
         renderer.present();
 
         // Count time spent presenting to the SDL renderer
