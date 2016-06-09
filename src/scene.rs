@@ -66,6 +66,12 @@ impl<'a> Scene<'a> {
         }
     }
 
+    /// Remove the rearmost element from the Scene and return it.
+    /// Panics if the scene is empty.
+    pub fn pop(&mut self) -> Instruction<'a> {
+        self.elements.pop().unwrap()
+    }
+
     /// Presents the scene onto the specified renderer.
     /// Consumes the scene's contents in the process.
     pub fn present(mut self, renderer: &mut sdl2::render::Renderer<'static>,
@@ -239,4 +245,32 @@ impl Visible for Rectangle {
             renderer.draw_rect(self.rect, self.color);
         }
     }
+}
+
+// Tests!
+
+#[test]
+fn scene_pop_works() {
+    #[derive(Eq, PartialEq)]
+    struct Pixel {};
+    impl Visible for Pixel {
+        // XXX: Scene's role as a strict value container perhaps argues against
+        // concrete Renderer and RenderContext dependencies for its items?
+        fn show(&self, _: &mut Renderer, _: &mut RenderContext) { }
+    }
+
+    let fore = Pixel {};
+    let back = Pixel {};
+
+    let mut s = Scene::new();
+    s.add(&fore, 10);
+    s.add(&back, 0);
+
+    s.pop();
+    s.pop();
+
+    // XXX: the way Scene deals with render instructions as trait objects
+    // makes it difficult to test! The only way to actually interact with
+    // a Visible right now is to show it on a Renderer.
+    //assert_eq!(&fore, s.pop());
 }
