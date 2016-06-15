@@ -275,6 +275,10 @@ fn scene_pop_works() {
     //assert_eq!(&fore, s.pop());
 }
 
+fn world() -> u32 {
+    1
+}
+
 // Let's TDD the world!
 //
 // World is a reactive behavior, which in this iteration we'll represent as a
