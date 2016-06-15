@@ -274,3 +274,13 @@ fn scene_pop_works() {
     // a Visible right now is to show it on a Renderer.
     //assert_eq!(&fore, s.pop());
 }
+
+// Let's TDD the world!
+//
+// World is a reactive behavior, which in this iteration we'll represent as a
+// Signal<Vec<Show>>. Here Show may become a trait object or an enum...
+
+#[test]
+fn world_exists() {
+    let my_world = world();
+}
