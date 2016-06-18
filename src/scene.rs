@@ -1,3 +1,4 @@
+use carboxyl::Signal;
 use num::rational::Ratio;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 use sdl2::pixels::Color;
@@ -275,8 +276,12 @@ fn scene_pop_works() {
     //assert_eq!(&fore, s.pop());
 }
 
-fn world() -> u32 {
-    1
+#[derive(Clone)]
+enum Show {
+}
+
+fn world() -> Signal<Vec<Show>> {
+    Signal::new(vec![])
 }
 
 // Let's TDD the world!
@@ -286,5 +291,5 @@ fn world() -> u32 {
 
 #[test]
 fn world_exists() {
-    let my_world = world();
+    let my_world: Signal<Vec<Show>> = world();
 }
