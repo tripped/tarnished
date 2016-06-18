@@ -291,5 +291,5 @@ fn world() -> Signal<Vec<Show>> {
 
 #[test]
 fn world_exists() {
-    let my_world: Signal<Vec<Show>> = world();
+    let _my_world: Signal<Vec<Show>> = world();
 }
