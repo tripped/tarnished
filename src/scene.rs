@@ -16,7 +16,7 @@ pub trait Visible {
 }
 
 /// A scene Instruction is a Visible and a z-index at which it is to be shown.
-struct Instruction<'a> {
+pub struct Instruction<'a> {
     z_index: i32,
     object: &'a Visible,
 }
