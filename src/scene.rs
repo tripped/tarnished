@@ -1,4 +1,5 @@
-use carboxyl::Signal;
+use carboxyl::{Signal, Sink, Stream};
+use event::IOEvent;
 use num::rational::Ratio;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 use sdl2::pixels::Color;
@@ -280,7 +281,7 @@ fn scene_pop_works() {
 enum Show {
 }
 
-fn world() -> Signal<Vec<Show>> {
+fn world(events: Stream<IOEvent>) -> Signal<Vec<Show>> {
     Signal::new(vec![])
 }
 
@@ -291,5 +292,6 @@ fn world() -> Signal<Vec<Show>> {
 
 #[test]
 fn world_exists() {
-    let _my_world: Signal<Vec<Show>> = world();
+    let sink: Sink<IOEvent> = Sink::new();
+    let _my_world: Signal<Vec<Show>> = world(sink.stream());
 }
