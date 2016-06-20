@@ -277,12 +277,17 @@ fn scene_pop_works() {
     //assert_eq!(&fore, s.pop());
 }
 
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq, Debug)]
 enum Show {
+    Sprite(String),
 }
 
-fn world(events: Stream<IOEvent>) -> Signal<Vec<Show>> {
-    Signal::new(vec![])
+fn world<F>(gen: F, events: Stream<IOEvent>) -> Signal<Vec<Show>>
+        where F: Fn(Stream<IOEvent>) -> Signal<Show> {
+
+    let behavior = gen(events);
+
+    behavior.map(|show| vec![show])
 }
 
 // Let's TDD the world!
@@ -293,5 +298,12 @@ fn world(events: Stream<IOEvent>) -> Signal<Vec<Show>> {
 #[test]
 fn world_exists() {
     let sink: Sink<IOEvent> = Sink::new();
-    let _my_world: Signal<Vec<Show>> = world(sink.stream());
+
+    fn generator(events: Stream<IOEvent>) -> Signal<Show> {
+        Signal::new(Show::Sprite("foo".into()))
+    }
+
+    let my_world: Signal<Vec<Show>> = world(generator, sink.stream());
+
+    assert_eq!(my_world.sample(), vec![Show::Sprite("foo".into())]);
 }
