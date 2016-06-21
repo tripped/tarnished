@@ -299,7 +299,7 @@ fn world<F>(gen: F, events: Stream<IOEvent>) -> Signal<Vec<Show>>
 fn world_exists() {
     let sink: Sink<IOEvent> = Sink::new();
 
-    fn generator(events: Stream<IOEvent>) -> Signal<Show> {
+    fn generator(_: Stream<IOEvent>) -> Signal<Show> {
         Signal::new(Show::Sprite("foo".into()))
     }
 
