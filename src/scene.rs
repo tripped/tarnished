@@ -282,10 +282,14 @@ enum Show {
     Sprite(String),
 }
 
-fn world<F>(gen: F, events: Stream<IOEvent>) -> Signal<Vec<Show>>
-        where F: Fn(Stream<IOEvent>) -> Signal<Show> {
+fn world<I>(gen: &mut I, events: Stream<IOEvent>)
+        -> Signal<Vec<Show>>
+        where I: Iterator<Item=Signal<Show>> {
 
-    let behavior = gen(events);
+    // XXX: shouldn't just block on first event, this creates an awkward
+    // interface requirement. Ideally the generator should be mapped over
+    // the target behavior somehow.
+    let behavior = gen.next().unwrap();
 
     behavior.map(|show| vec![show])
 }
@@ -297,13 +301,15 @@ fn world<F>(gen: F, events: Stream<IOEvent>) -> Signal<Vec<Show>>
 
 #[test]
 fn world_exists() {
-    let sink: Sink<IOEvent> = Sink::new();
+    let events: Sink<IOEvent> = Sink::new();
+    let generator: Sink<Signal<Show>> = Sink::new();
 
-    fn generator(_: Stream<IOEvent>) -> Signal<Show> {
-        Signal::new(Show::Sprite("foo".into()))
-    }
+    let mut gen_events = generator.stream().events();
 
-    let my_world: Signal<Vec<Show>> = world(generator, sink.stream());
+    // The generator will yield a single behavior that defines our scene
+    generator.send(Signal::new(Show::Sprite("foo".into())));
+
+    let my_world: Signal<Vec<Show>> = world(&mut gen_events, events.stream());
 
     assert_eq!(my_world.sample(), vec![Show::Sprite("foo".into())]);
 }
