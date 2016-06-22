@@ -300,7 +300,7 @@ fn world<I>(gen: &mut I, events: Stream<IOEvent>)
 // Signal<Vec<Show>>. Here Show may become a trait object or an enum...
 
 #[test]
-fn world_exists() {
+fn world_uses_generator() {
     let events: Sink<IOEvent> = Sink::new();
     let generator: Sink<Signal<Show>> = Sink::new();
 
