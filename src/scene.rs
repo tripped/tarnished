@@ -287,12 +287,14 @@ fn world<I>(gen: &mut I, _: Stream<IOEvent>)
         -> Signal<Vec<Show>>
         where I: Iterator<Item=Signal<Show>> {
 
-    // XXX: shouldn't just block on first event, this creates an awkward
-    // interface requirement. Ideally the generator should be mapped over
-    // the target behavior somehow.
-    let behavior = gen.next().unwrap();
+    // XXX: obviously just taking three signals off the iterator is wrong;
+    // a better approach for producing the combined behavior is needed.
+    let a = gen.next().unwrap();
+    let b = gen.next().unwrap();
+    let c = gen.next().unwrap();
 
-    behavior.map(|show| vec![show])
+    lift!(|a, b, c| vec![a, b, c],
+        &a, &b, &c)
 }
 
 // Let's TDD the world!
@@ -307,10 +309,18 @@ fn world_uses_generator() {
 
     let mut gen_events = generator.stream().events();
 
-    // The generator will yield a single behavior that defines our scene
-    generator.send(Signal::new(Show::Sprite("foo".into())));
+    // The generator will yield the behaviors that defines our scene
+    let sprites: Vec<Signal<Show>> = vec![
+        Signal::new(Show::Sprite("foo".into())),
+        Signal::new(Show::Sprite("bar".into())),
+        Signal::new(Show::Sprite("baz".into()))];
+
+    generator.feed(sprites);
 
     let my_world: Signal<Vec<Show>> = world(&mut gen_events, events.stream());
 
-    assert_eq!(my_world.sample(), vec![Show::Sprite("foo".into())]);
+    assert_eq!(my_world.sample(), vec![
+        Show::Sprite("foo".into()),
+        Show::Sprite("bar".into()),
+        Show::Sprite("baz".into())]);
 }
