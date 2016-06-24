@@ -1,5 +1,4 @@
-use carboxyl::{Signal, Sink, Stream};
-use event::IOEvent;
+use carboxyl::{Signal, Sink};
 use num::rational::Ratio;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 use sdl2::pixels::Color;
@@ -283,8 +282,7 @@ enum Show {
 }
 
 // XXX: maybe should delete Stream parameter since we don't use it yet
-fn world<I>(gen: &mut I, _: Stream<IOEvent>)
-        -> Signal<Vec<Show>>
+fn world<I>(gen: &mut I) -> Signal<Vec<Show>>
         where I: Iterator<Item=Signal<Show>> {
 
     // XXX: obviously just taking three signals off the iterator is wrong;
@@ -304,7 +302,6 @@ fn world<I>(gen: &mut I, _: Stream<IOEvent>)
 
 #[test]
 fn world_uses_generator() {
-    let events: Sink<IOEvent> = Sink::new();
     let generator: Sink<Signal<Show>> = Sink::new();
 
     let mut gen_events = generator.stream().events();
@@ -317,7 +314,7 @@ fn world_uses_generator() {
 
     generator.feed(sprites);
 
-    let my_world: Signal<Vec<Show>> = world(&mut gen_events, events.stream());
+    let my_world: Signal<Vec<Show>> = world(&mut gen_events);
 
     assert_eq!(my_world.sample(), vec![
         Show::Sprite("foo".into()),
