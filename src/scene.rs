@@ -295,11 +295,6 @@ fn world<I>(gen: &mut I) -> Signal<Vec<Show>>
         &a, &b, &c)
 }
 
-// Let's TDD the world!
-//
-// World is a reactive behavior, which in this iteration we'll represent as a
-// Signal<Vec<Show>>. Here Show may become a trait object or an enum...
-
 #[test]
 fn world_uses_generator() {
     let generator: Sink<Signal<Show>> = Sink::new();
