@@ -1,4 +1,4 @@
-use carboxyl::{Signal, Sink};
+use carboxyl::{Signal, Stream, Sink};
 use num::rational::Ratio;
 use renderer::{Renderer, RenderContext, HPos, VPos};
 use sdl2::pixels::Color;
@@ -281,36 +281,36 @@ enum Show {
     Sprite(String),
 }
 
-fn world<I>(gen: &mut I) -> Signal<Vec<Show>>
-        where I: Iterator<Item=Signal<Show>> {
+fn world(gen: Stream<Signal<Show>>) -> Signal<Vec<Show>> {
+    // XXX: this approach is more flexible as it permits arbitrary numbers of
+    // signals to be combined within world, but unfortunately it has to step
+    // out of strict FRP to do it; I'm not sure there's a better way, since
+    // lift! can only generate signals of statically finite arity.
 
-    // XXX: obviously just taking three signals off the iterator is wrong;
-    // a better approach for producing the combined behavior is needed.
-    let a = gen.next().unwrap();
-    let b = gen.next().unwrap();
-    let c = gen.next().unwrap();
+    let population = gen.fold(vec![], |signals, x| {
+        let mut signals = signals.clone();
+        signals.push(x);
+        signals
+    });
 
-    lift!(|a, b, c| vec![a, b, c],
-        &a, &b, &c)
+    population.map(|p| p.iter().map(|x| x.sample()).collect())
 }
 
 #[test]
 fn world_uses_generator() {
     let generator: Sink<Signal<Show>> = Sink::new();
-
-    let mut gen_events = generator.stream().events();
+    let my_world = world(generator.stream());
 
     // The generator will yield the behaviors that defines our scene
     let sprites = vec![
         Show::Sprite("foo".into()),
         Show::Sprite("bar".into()),
-        Show::Sprite("baz".into())];
+        Show::Sprite("baz".into()),
+        Show::Sprite("quux".into()),
+        Show::Sprite("wibble".into())];
 
     let behaviors = sprites.iter().cloned().map(Signal::new);
-
     generator.feed(behaviors);
-
-    let my_world = world(&mut gen_events);
 
     assert_eq!(my_world.sample(), sprites);
 }
