@@ -310,7 +310,7 @@ fn world_uses_generator() {
 
     generator.feed(behaviors);
 
-    let my_world: Signal<Vec<Show>> = world(&mut gen_events);
+    let my_world = world(&mut gen_events);
 
     assert_eq!(my_world.sample(), sprites);
 }
