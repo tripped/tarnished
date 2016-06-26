@@ -281,7 +281,6 @@ enum Show {
     Sprite(String),
 }
 
-// XXX: maybe should delete Stream parameter since we don't use it yet
 fn world<I>(gen: &mut I) -> Signal<Vec<Show>>
         where I: Iterator<Item=Signal<Show>> {
 
