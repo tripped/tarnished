@@ -302,17 +302,16 @@ fn world_uses_generator() {
     let mut gen_events = generator.stream().events();
 
     // The generator will yield the behaviors that defines our scene
-    let sprites: Vec<Signal<Show>> = vec![
-        Signal::new(Show::Sprite("foo".into())),
-        Signal::new(Show::Sprite("bar".into())),
-        Signal::new(Show::Sprite("baz".into()))];
+    let sprites = vec![
+        Show::Sprite("foo".into()),
+        Show::Sprite("bar".into()),
+        Show::Sprite("baz".into())];
 
-    generator.feed(sprites);
+    let behaviors = sprites.iter().cloned().map(Signal::new);
+
+    generator.feed(behaviors);
 
     let my_world: Signal<Vec<Show>> = world(&mut gen_events);
 
-    assert_eq!(my_world.sample(), vec![
-        Show::Sprite("foo".into()),
-        Show::Sprite("bar".into()),
-        Show::Sprite("baz".into())]);
+    assert_eq!(my_world.sample(), sprites);
 }
