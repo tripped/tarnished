@@ -313,4 +313,11 @@ fn world_uses_generator() {
     generator.feed(behaviors);
 
     assert_eq!(my_world.sample(), sprites);
+
+    let newsprite = Show::Sprite("barf".into());
+    let mut sprites = sprites.clone();
+    sprites.push(newsprite.clone());
+    let behavior = Signal::new(newsprite);
+    generator.send(behavior);
+    assert_eq!(my_world.sample(), sprites);
 }
