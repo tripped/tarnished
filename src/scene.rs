@@ -321,3 +321,12 @@ fn world_uses_generator() {
     generator.send(behavior);
     assert_eq!(my_world.sample(), sprites);
 }
+
+fn population() -> u32 {
+    1
+}
+
+#[test]
+fn population_exists() {
+    let p = population();
+}
