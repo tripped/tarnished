@@ -322,15 +322,25 @@ fn world_uses_generator() {
     assert_eq!(my_world.sample(), sprites);
 }
 
+#[derive(Clone)]
 enum Birth {
+    Birth(Signal<Show>)
 }
 
-fn population(births: Stream<Birth>) -> u32 {
-    1
+fn population(births: Stream<Birth>) -> Signal<Vec<Signal<Show>>> {
+    lift!(|| {
+        vec![Signal::new(Show::Sprite("foo".into()))]
+    })
 }
 
 #[test]
 fn population_exists() {
     let sink: Sink<Birth> = Sink::new();
     let p = population(sink.stream());
+
+    let sprite = Show::Sprite("foo".into());
+    sink.send(Birth::Birth(Signal::new(sprite.clone())));
+
+    let current_pop = p.sample();
+    assert_eq!(current_pop[0].sample(), sprite);
 }
