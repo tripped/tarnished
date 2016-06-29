@@ -322,11 +322,15 @@ fn world_uses_generator() {
     assert_eq!(my_world.sample(), sprites);
 }
 
-fn population() -> u32 {
+enum Birth {
+}
+
+fn population(births: Stream<Birth>) -> u32 {
     1
 }
 
 #[test]
 fn population_exists() {
-    let p = population();
+    let sink: Sink<Birth> = Sink::new();
+    let p = population(sink.stream());
 }
