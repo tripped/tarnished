@@ -1,18 +1,3 @@
-[root]
-name = "tarnished"
-version = "0.1.0"
-dependencies = [
- "carboxyl 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "num 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "sdl2 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sdl2_image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sdl2_ttf 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "snes_spc 0.1.2 (git+https://github.com/tripped/rust-snes_spc)",
- "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
 [[package]]
 name = "bitflags"
 version = "0.5.0"
@@ -100,7 +85,7 @@ dependencies = [
  "num-integer 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -109,7 +94,7 @@ version = "0.1.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num-traits 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -137,7 +122,7 @@ dependencies = [
  "num-bigint 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-integer 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -163,7 +148,7 @@ dependencies = [
 
 [[package]]
 name = "rustc-serialize"
-version = "0.3.19"
+version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -226,6 +211,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "tarnished"
+version = "0.1.0"
+dependencies = [
+ "carboxyl 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2_image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2_ttf 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "snes_spc 0.1.2 (git+https://github.com/tripped/rust-snes_spc)",
+ "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "tempdir"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -274,7 +274,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum num-traits 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)" = "51eab148f171aefad295f8cece636fc488b9b392ef544da31ea4b8ef6b9e9c39"
 "checksum pulldown-cmark 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "8361e81576d2e02643b04950e487ec172b687180da65c731c03cf336784e6c07"
 "checksum rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)" = "2791d88c6defac799c3f20d74f094ca33b9332612d9aef9078519c82e4fe04a5"
-"checksum rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)" = "6159e4e6e559c81bd706afe9c8fd68f547d3e851ce12e76b1de7914bab61691b"
+"checksum rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)" = "dcf128d1287d2ea9d80910b5f1120d0b8eede3fbf1abe91c40d39ea7d51e6fda"
 "checksum sdl2 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)" = "76ec9974f9c46477eaf6df9ca7fce9005848a3b345166b20c946e45015bb082c"
 "checksum sdl2-sys 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)" = "de2b434665e5a478b029ec5bbdb038d9d110d46b0a94e6688b39d52027fb1f12"
 "checksum sdl2_image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5079ff5478552f3aa49212f190a3ae8a4b72b9c7f175baa51034f68e597a89d1"
