@@ -1,14 +1,42 @@
 {
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceRoot}/target/debug/tarnished",
-            "sourceLanguages": ["rust"],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": "cargo-build"
+            "name": "Debug executable 'tarnished'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=tarnished",
+                    "--package=tarnished"
+                ],
+                "filter": {
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'tarnished'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--bin=tarnished",
+                    "--package=tarnished"
+                ],
+                "filter": {
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
